@@ -64,8 +64,8 @@ public class UserDetailEntity {
         this.email = email;
         this.password = password;
         this.pin = pin;
-        this.userFname = userFName;
-        this.userLname = userLName;
+        this.userFname = userFname;
+        this.userLname = userLname;
         this.userImage = userImage;
         this.phoneNumber = phoneNumber;
         this.bankNumber = bankNumber;
