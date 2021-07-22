@@ -58,7 +58,7 @@ public class UserDetailEntity {
     @Column()
     private boolean isDeleted = false;
 
-    public UserDetail(String username, String email, String password, String pin, String userFName, String userLName,
+    public UserDetail(String username, String email, String password, String pin, String userFname, String userLname,
             String userImage, PhoneNumber phoneNumber, String bankNumber, String userRole) {
         this.username = username;
         this.email = email;
