@@ -17,16 +17,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class FriendshipEntity {
-  // @Id
-  // @GeneratedValue(strategy = GenerationType.IDENTITY)
-  // private Integer friendshipId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer friendshipId;
   
-  // @ManyToOne
-  // @JoinColumn(name = "user_id")
-  // private UserDetailEntity user;
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private UserDetailEntity user;
 
-  // @ManyToOne
-  // @JoinColumn(name = "friend_id")
-  // private UserDetailEntity friend;
+  @ManyToOne
+  @JoinColumn(name = "friend_id")
+  private UserDetailEntity friend;
 
 }
