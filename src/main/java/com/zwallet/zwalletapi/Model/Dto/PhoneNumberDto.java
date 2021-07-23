@@ -5,8 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-// @NoArgsConstructor
-// @AllArgsConstructor
-public class PhoneNumber {
-  
+@NoArgsConstructor
+@AllArgsConstructor
+public class PhoneNumberDto {
+  private String phoneNumber;
+  private boolean isPrimary;
 }
