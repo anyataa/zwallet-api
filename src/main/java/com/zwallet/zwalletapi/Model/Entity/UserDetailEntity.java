@@ -43,7 +43,7 @@ public class UserDetailEntity {
     private String userImage;
 
     @ManyToOne
-    @JoinColumn(name = "phone_number_id")
+    @JoinColumn(name = "phone_number_id", nullable = true)
     private PhoneNumberEntity phoneNumber;
 
     @Column(length = 50, nullable = true)
