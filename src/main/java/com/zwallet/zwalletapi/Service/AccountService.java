@@ -12,15 +12,15 @@ import org.springframework.http.ResponseEntity;
 public interface AccountService {
 
     // Called on he dashboard to show balance
-    public Optional<AccountEntity> getAccountById(Integer accountId);
+    Optional<AccountEntity> getAccountById(Integer accountId);
 
     // Called when transaction happen
-    public void updateBalance();
+    void updateBalance();
 
     // Debug Purpos
-    public List<AccountEntity> getAllAccount() throws ExceptionNotFound;
+    List<AccountEntity> getAllAccount() throws ExceptionNotFound;
 
     // Post Purpose during user initiation
-    public ResponseEntity<?> postAccount(AccountDto dto);
+    ResponseEntity<?> postAccount(AccountDto dto);
 
 }

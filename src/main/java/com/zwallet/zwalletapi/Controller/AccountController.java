@@ -45,6 +45,7 @@ public class AccountController {
             return ResponseEntity.ok().body(newAccount);
         } catch (Exception e) {
             return ResponseEntity.ok().body(newAccount + " failed to save");
+        }
     }
 
     @GetMapping("/{accountId}")
