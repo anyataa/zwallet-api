@@ -51,13 +51,17 @@ public class UserDetailController {
 
     // @PostMapping("/add")
     // public ResponseEntity<?> addUser(@RequestBody UserDetailDto dto) {
-    //     UserDetailEntity userDetailEntity = new UserDetailEntity(dto.getUsername(), dto.getEmail(), dto.getPassword(),
-    //             dto.getPin(), dto.getUserFname(), dto.getUserLname(), dto.getUserImage(), dto.getBankNumber(), "USER");
+    // UserDetailEntity userDetailEntity = new UserDetailEntity(dto.getUsername(),
+    // dto.getEmail(), dto.getPassword(),
+    // dto.getPin(), dto.getUserFname(), dto.getUserLname(), dto.getUserImage(),
+    // dto.getBankNumber(), "USER");
 
-    //     userDetailRepository.save(userDetailEntity);
+    // userDetailRepository.save(userDetailEntity);
 
-    //     return ResponseEntity.ok().body("Success");
+    // return ResponseEntity.ok().body("Success");
     // }
+
+    // ===============================================================Get Users=======================================================
 
     @GetMapping("/all")
     public ResponseEntity<?> getUsers() {
@@ -65,6 +69,8 @@ public class UserDetailController {
 
         return ResponseEntity.ok().body(userDetailEntity);
     }
+
+    // ===============================================================Sign Up=======================================================
 
     @PostMapping("/signup")
     public ResponseEntity<?> registrasi(@RequestBody UserDetailDto dto) {
@@ -79,9 +85,9 @@ public class UserDetailController {
 
         // registering account
         try {
-            UserDetailEntity userCreated = new UserDetailEntity(dto.getUsername(), dto.getEmail(), passwordEncoder.encode(dto.getPassword()),
-                    dto.getPin(), dto.getUserFname(), dto.getUserLname(), dto.getUserImage(), dto.getBankNumber(),
-                    dto.getUserRole());
+            UserDetailEntity userCreated = new UserDetailEntity(dto.getUsername(), dto.getEmail(),
+                    passwordEncoder.encode(dto.getPassword()), dto.getPin(), dto.getUserFname(), dto.getUserLname(),
+                    dto.getUserImage(), dto.getBankNumber(), dto.getUserRole());
 
             // save to repo
             userService.createUser(userCreated);
@@ -99,6 +105,8 @@ public class UserDetailController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    // ===============================================================Sign In=======================================================
 
     @PostMapping("/signin")
     public ResponseEntity<?> login(@RequestBody UserDetailDto dto) {
@@ -132,4 +140,53 @@ public class UserDetailController {
         }
     }
 
+    // ===============================================================Soft Delete=======================================================
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setDeleted(true);
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body(userEntity);
+    }
+
+    // ===============================================================Update User Status When Sign In=======================================================
+
+    @PutMapping("/signin-status/{id}")
+    public ResponseEntity<?> updateSignStatus(@PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setActive(true);
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body(userEntity);
+    }
+
+    // ===============================================================Update User Status When Sign Out=======================================================
+
+    @PutMapping("/signout-status/{id}")
+    public ResponseEntity<?> updateSignOutStatus(@PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setActive(false);
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body(userEntity);
+    }
+
+      // ===============================================================Change Password=======================================================
+
+      @PutMapping("/update-password/{id}")
+      public ResponseEntity<?> updatePassword(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+          UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+          userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+          userDetailRepository.save(userEntity);
+          return ResponseEntity.ok().body(userEntity);
+      }
+
+      // ===============================================================Change PIN=======================================================
+
+      @PutMapping("/update-pin/{id}")
+      public ResponseEntity<?> updatePin(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+          UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+          userEntity.setPin(dto.getPin());
+          userDetailRepository.save(userEntity);
+          return ResponseEntity.ok().body(userEntity);
+      }
 }
