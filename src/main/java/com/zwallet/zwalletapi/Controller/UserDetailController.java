@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserDetailController {
     @Autowired
     UserDetailRepository userDetailRepository;
-    
+
     @PostMapping("/add")
-    public ResponseEntity<?> addUser(@RequestBody UserDetailDto dto){
-        UserDetailEntity userDetailEntity = new UserDetailEntity(dto.getUsername(), dto.getEmail(), dto.getPassword(), dto.getPin(), dto.getUserFname(), dto.getUserLname(), dto.getUserImage(), dto.getBankNumber(), "USER");
+    public ResponseEntity<?> addUser(@RequestBody UserDetailDto dto) {
+        UserDetailEntity userDetailEntity = new UserDetailEntity(dto.getUsername(), dto.getEmail(), dto.getPassword(),
+                dto.getPin(), dto.getUserFname(), dto.getUserLname(), dto.getUserImage(), dto.getBankNumber(), "USER");
 
         userDetailRepository.save(userDetailEntity);
 
@@ -30,7 +31,7 @@ public class UserDetailController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getUsers(){
+    public ResponseEntity<?> getUsers() {
         List<UserDetailEntity> userDetailEntity = userDetailRepository.findAll();
 
         return ResponseEntity.ok().body(userDetailEntity);
