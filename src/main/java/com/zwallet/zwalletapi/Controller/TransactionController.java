@@ -2,6 +2,7 @@ package com.zwallet.zwalletapi.Controller;
 
 import java.util.List;
 
+import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
 import com.zwallet.zwalletapi.Repository.TransactionRepository;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,6 +41,12 @@ public class TransactionController {
     @GetMapping("/transfer")
     public List<TransactionEntity> getTransaction() {
         return repo.findAll();
+    }
+
+    @GetMapping("/{accountId}")
+    public IncomeOutcomeDto getByReceiverId(@PathVariable("accountId") Integer accountId)
+            throws ResourceNotFoundException {
+        return service.getAllTransaction(accountId);
     }
 
 }

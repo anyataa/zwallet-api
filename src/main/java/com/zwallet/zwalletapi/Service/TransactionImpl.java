@@ -1,11 +1,14 @@
 package com.zwallet.zwalletapi.Service;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
@@ -28,13 +31,34 @@ public class TransactionImpl implements TransactionService {
     private AccountRepository accountRepo;
 
     @Override
-    public Optional<TransactionEntity> getByReceiverId(AccountEntity receiver) throws ResourceNotFoundException {
-        // TODO Auto-generated method stub
-        return null;
+    public IncomeOutcomeDto getAllTransaction(Integer accountId) throws ResourceNotFoundException {
+        AccountEntity foundAccount = accountRepo.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find account with id : " + accountId));
+
+        // Receiver : Income
+        List<TransactionEntity> foundIncome = repo.findByToAccountId(foundAccount);
+        Double sumIncome = 0D;
+        for (TransactionEntity item : foundIncome) {
+            sumIncome = sumIncome + item.getTransactionAmount();
+        }
+
+        // Sender : Outcome
+        List<TransactionEntity> foundOutcome = repo.findByFromAccountId(foundAccount);
+        Double sumOutcome = 0D;
+        for (TransactionEntity item : foundOutcome) {
+            sumOutcome += item.getTransactionAmount();
+        }
+
+        // All Transaction
+        List<TransactionEntity> foundTransaction = repo.findAllTransactionByAccountId(foundAccount);
+
+        IncomeOutcomeDto data = new IncomeOutcomeDto(sumIncome, sumOutcome, foundIncome, foundOutcome,
+                foundTransaction);
+        return data;
     }
 
     @Override
-    public Optional<TransactionEntity> getBySenderId(AccountEntity sender) throws ResourceNotFoundException {
+    public TransactionEntity getBySenderId(Integer idSender) throws ResourceNotFoundException {
         // TODO Auto-generated method stub
         return null;
     }

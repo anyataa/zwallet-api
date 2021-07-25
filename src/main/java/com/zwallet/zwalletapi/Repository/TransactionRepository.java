@@ -3,16 +3,23 @@ package com.zwallet.zwalletapi.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Integer> {
 
-    public Optional<List<TransactionEntity>> findByFromAccountId(Integer sender);
+    List<TransactionEntity> findByFromAccountId(AccountEntity accountId);
 
-    public Optional<List<TransactionEntity>> findByToAccountId(Integer receiver);
+    List<TransactionEntity> findByToAccountId(AccountEntity accountId);
 
+    @Query(value = "SELECT * FROM transaction_table WHERE to_account_id = 2 OR from_account_id = 2  ORDER BY transaction_timestamp", nativeQuery = true)
+    List<TransactionEntity> findAllTransactionByAccountId(AccountEntity accountId);
+
+    @Query(value = "SELECT * FROM transaction_table  WHERE  to_account_id = 2 AND transaction_timestamp BETWEEN curdate()-7 AND curdate()  OR from_account_id = 2 AND transaction_timestamp BETWEEN curdate()-7 AND curdate()  ORDER BY transaction_timestamp ", nativeQuery = true)
+    List<TransactionEntity> findAllTransactionLastWeek(AccountEntity accountId);
 }

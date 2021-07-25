@@ -24,4 +24,7 @@ public interface AccountService {
     // Post Purpose during user initiation
     ResponseEntity<?> postAccount(AccountDto dto);
 
+    // put
+    ResponseEntity<?> putAccount(Integer accountId, Integer userId);
+
 }
