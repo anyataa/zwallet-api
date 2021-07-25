@@ -157,7 +157,7 @@ public class UserDetailController {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setActive(true);
         userDetailRepository.save(userEntity);
-        return ResponseEntity.ok().body(userEntity);
+        return ResponseEntity.ok().body("Login");
     }
 
     // ===============================================================Update User Status When Sign Out=======================================================
@@ -167,26 +167,47 @@ public class UserDetailController {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setActive(false);
         userDetailRepository.save(userEntity);
-        return ResponseEntity.ok().body(userEntity);
+        return ResponseEntity.ok().body("Logout");
     }
 
-      // ===============================================================Change Password=======================================================
+    // ===============================================================Change Password=======================================================
 
-      @PutMapping("/update-password/{id}")
-      public ResponseEntity<?> updatePassword(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-          UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-          userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-          userDetailRepository.save(userEntity);
-          return ResponseEntity.ok().body(userEntity);
-      }
+    @PutMapping("/change-password/{id}")
+    public ResponseEntity<?> updatePassword(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Password Changed!");
+    }
 
-      // ===============================================================Change PIN=======================================================
+    // ===============================================================Change PIN=======================================================
 
-      @PutMapping("/update-pin/{id}")
-      public ResponseEntity<?> updatePin(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-          UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-          userEntity.setPin(dto.getPin());
-          userDetailRepository.save(userEntity);
-          return ResponseEntity.ok().body(userEntity);
-      }
+    @PutMapping("/change-pin/{id}")
+    public ResponseEntity<?> updatePin(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setPin(dto.getPin());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("PIN Changed!");
+    }
+
+    // ===============================================================Reset Password=======================================================
+
+    @PutMapping("/reset-password/{email}")
+    public ResponseEntity<?> resetPassword(@RequestBody UserDetailDto dto, @PathVariable String email) {
+        UserDetailEntity userEntity = userDetailRepository.findByEmail(email);
+        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Password Has Been Changed Successfully!");
+    }
+
+    // ===============================================================Personal Information=======================================================
+
+    @PutMapping("/personalinfo/{id}")
+    public ResponseEntity<?> personalInformation(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setUserFname(dto.getUserFname());;
+        userEntity.setUserLname(dto.getUserLname());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Profile Has Been Saved Successfully!");
+    }
 }
