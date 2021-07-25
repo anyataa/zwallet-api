@@ -49,17 +49,21 @@ public class UserDetailController {
     @Autowired
     private JWTUtils jwtUtils;
 
-    // @PostMapping("/add")
-    // public ResponseEntity<?> addUser(@RequestBody UserDetailDto dto) {
-    // UserDetailEntity userDetailEntity = new UserDetailEntity(dto.getUsername(),
-    // dto.getEmail(), dto.getPassword(),
-    // dto.getPin(), dto.getUserFname(), dto.getUserLname(), dto.getUserImage(),
-    // dto.getBankNumber(), "USER");
+    // ===============================================================Add Vendor(Merchant & Bank)=======================================================
 
-    // userDetailRepository.save(userDetailEntity);
+    @PostMapping("/add")
+    public ResponseEntity<?> addUser(@RequestBody UserDetailDto dto) {
+        UserDetailEntity userDetailEntity = new UserDetailEntity();
+        userDetailEntity.setUsername(dto.getUsername());
+        userDetailEntity.setEmail(dto.getEmail());
+        userDetailEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userDetailEntity.setPin(dto.getPin());
+        userDetailEntity.setUserRole(dto.getUserRole());
 
-    // return ResponseEntity.ok().body("Success");
-    // }
+        userDetailRepository.save(userDetailEntity);
+
+        return ResponseEntity.ok().body("Success!");
+    }
 
     // ===============================================================Get Users=======================================================
 
@@ -85,9 +89,12 @@ public class UserDetailController {
 
         // registering account
         try {
-            UserDetailEntity userCreated = new UserDetailEntity(dto.getUsername(), dto.getEmail(),
-                    passwordEncoder.encode(dto.getPassword()), dto.getPin(), dto.getUserFname(), dto.getUserLname(),
-                    dto.getUserImage(), dto.getBankNumber(), dto.getUserRole());
+            UserDetailEntity userCreated = new UserDetailEntity();
+            userCreated.setUsername(dto.getUsername());
+            userCreated.setEmail(dto.getEmail());
+            userCreated.setPassword(passwordEncoder.encode(dto.getPassword()));
+            userCreated.setPin(dto.getPin());
+            userCreated.setUserRole("USER");
 
             // save to repo
             userService.createUser(userCreated);
@@ -203,11 +210,21 @@ public class UserDetailController {
     // ===============================================================Personal Information=======================================================
 
     @PutMapping("/personalinfo/{id}")
-    public ResponseEntity<?> personalInformation(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+    public ResponseEntity<?> addPersonalInformation(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-        userEntity.setUserFname(dto.getUserFname());;
+        userEntity.setUserFname(dto.getUserFname());
         userEntity.setUserLname(dto.getUserLname());
         userDetailRepository.save(userEntity);
         return ResponseEntity.ok().body("Your Profile Has Been Saved Successfully!");
+    }
+    
+    // ===============================================================Bank Number=======================================================
+
+    @PutMapping("/banknumber/{id}")
+    public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setBankNumber(dto.getBankNumber());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully!");
     }
 }

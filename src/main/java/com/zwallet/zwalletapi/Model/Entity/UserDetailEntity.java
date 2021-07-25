@@ -58,16 +58,11 @@ public class UserDetailEntity {
     @Column()
     private boolean isDeleted = false;
 
-    public UserDetailEntity(String username, String email, String password, String pin, String userFname, String userLname,
-            String userImage, String bankNumber, String userRole) {
+    public UserDetailEntity(String username, String email, String password, String pin, String userRole) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.pin = pin;
-        this.userFname = userFname;
-        this.userLname = userLname;
-        this.userImage = userImage;
-        this.bankNumber = bankNumber;
         this.userRole = userRole;
     }
 
