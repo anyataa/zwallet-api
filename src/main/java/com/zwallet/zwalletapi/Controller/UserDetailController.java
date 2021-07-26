@@ -10,8 +10,10 @@ import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.UserDetailDto;
 import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.UserDetailRepository;
+import com.zwallet.zwalletapi.Service.AccountService;
 import com.zwallet.zwalletapi.Service.UserDetailsImpl;
 import com.zwallet.zwalletapi.Service.UserServiceImpl;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,14 @@ public class UserDetailController {
     UserDetailRepository userDetailRepository;
 
     @Autowired
+
+    AccountService accountService;
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addUser(@RequestBody UserDetailDto dto) {
+        UserDetailEntity userDetailEntity = new UserDetailEntity(dto.getUsername(), dto.getEmail(), dto.getPassword(),
+                dto.getPin(), dto.getUserFname(), dto.getUserLname(), dto.getUserImage(), dto.getBankNumber(), "USER");
+
     private UserServiceImpl userService;
 
     @Autowired
@@ -59,6 +69,7 @@ public class UserDetailController {
         userDetailEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
         userDetailEntity.setPin(dto.getPin());
         userDetailEntity.setUserRole(dto.getUserRole());
+
 
         userDetailRepository.save(userDetailEntity);
 
