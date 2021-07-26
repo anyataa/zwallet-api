@@ -37,6 +37,12 @@ public class PhoneNumberController {
   @PostMapping("/add")
   public ResponseEntity<?> addPhone(@RequestBody PhoneNumberDto dto){
     PhoneNumberEntity phone = new PhoneNumberEntity(dto.getPhoneNumber());
+
+    UserDetailEntity user = userDetailRepository.findById(dto.getUserId()).get();
+
+    phone.setUser(user);
+
+
     phoneRepository.save(phone);
     return ResponseEntity.ok().body(phone);
   }
