@@ -39,7 +39,6 @@ public class UserDetailController {
     UserDetailRepository userDetailRepository;
 
     @Autowired
-
     AccountService accountService;
 
     // @PostMapping("/add")
@@ -49,6 +48,7 @@ public class UserDetailController {
     // dto.getPin(), dto.getUserFname(), dto.getUserLname(), dto.getUserImage(),
     // dto.getBankNumber(), "USER");
 
+    @Autowired
     private UserServiceImpl userService;
 
     @Autowired
