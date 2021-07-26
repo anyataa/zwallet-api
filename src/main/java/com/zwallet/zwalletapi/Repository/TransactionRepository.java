@@ -17,9 +17,12 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
 
     List<TransactionEntity> findByToAccountId(AccountEntity accountId);
 
-    @Query(value = "SELECT * FROM transaction_table WHERE to_account_id = 2 OR from_account_id = 2  ORDER BY transaction_timestamp", nativeQuery = true)
+    @Query(value = "SELECT * FROM transaction_table WHERE to_account_id = ?1 OR from_account_id = ?1  ORDER BY transaction_timestamp", nativeQuery = true)
     List<TransactionEntity> findAllTransactionByAccountId(AccountEntity accountId);
 
-    @Query(value = "SELECT * FROM transaction_table  WHERE  to_account_id = 2 AND transaction_timestamp BETWEEN curdate()-7 AND curdate()  OR from_account_id = 2 AND transaction_timestamp BETWEEN curdate()-7 AND curdate()  ORDER BY transaction_timestamp ", nativeQuery = true)
+    @Query(value = "SELECT * FROM transaction_table  WHERE  to_account_id = ?1 AND transaction_timestamp BETWEEN curdate()-7 AND curdate()  OR from_account_id = ?1 AND transaction_timestamp BETWEEN curdate()-7 AND curdate()  ORDER BY transaction_timestamp ", nativeQuery = true)
     List<TransactionEntity> findAllTransactionLastWeek(AccountEntity accountId);
+
+    @Query(value = "SELECT * FROM transaction_table WHERE  to_account_id = ?1 AND transaction_timestamp BETWEEN curdate()-8 AND curdate()-30  OR from_account_id = ?1 AND transaction_timestamp BETWEEN curdate()-8 AND curdate()-30 ORDER BY transaction_timestamp", nativeQuery = true)
+    List<TransactionEntity> findAllTransactionMonth(AccountEntity accountId);
 }

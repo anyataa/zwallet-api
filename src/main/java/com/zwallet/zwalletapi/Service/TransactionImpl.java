@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
 import com.zwallet.zwalletapi.Repository.AccountRepository;
@@ -58,12 +59,6 @@ public class TransactionImpl implements TransactionService {
     }
 
     @Override
-    public TransactionEntity getBySenderId(Integer idSender) throws ResourceNotFoundException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public ResponseEntity<?> transactionTransfer(TransactionDto dto) throws ResourceNotFoundException {
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
@@ -98,6 +93,17 @@ public class TransactionImpl implements TransactionService {
             newTransaction.setIsSuccess(1);
             return ResponseEntity.ok().body(e.getMessage());
         }
+    }
+
+    @Override
+    public TransactionPeriodDto getTransactionPeriodically(Integer accountId) throws ResourceNotFoundException {
+        AccountEntity foundAccount = accountRepo.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("cannot find this account id"));
+
+        TransactionPeriodDto history = new TransactionPeriodDto();
+        history.setWeekly(repo.findAllTransactionLastWeek(foundAccount));
+        return history;
+
     }
 
 }

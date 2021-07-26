@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.zwallet.zwalletapi.Model.Dto.AccountDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
+import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.AccountRepository;
 import com.zwallet.zwalletapi.Repository.UserDetailRepository;
 import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
@@ -42,8 +43,20 @@ public class AccountImp implements AccountService {
 
     @Override
     public ResponseEntity<?> postAccount(AccountDto dto) {
-        // TODO Auto-generated method stub
-        return null;
+        AccountEntity newAccount = new AccountEntity();
+        UserDetailEntity newUser = new UserDetailEntity(dto.getUser().getUsername(), dto.getUser().getEmail(),
+                dto.getUser().getPassword(), dto.getUser().getPin(), dto.getUser().getUserFname(),
+                dto.getUser().getUserLname(), dto.getUser().getUserImage(), dto.getUser().getBankNumber(), "USER");
+
+        dto.setData(dto.getBalance(), newAccount, newUser);
+        try {
+            userRepo.save(newUser);
+            newAccount.setUserId(newUser);
+            repo.save(newAccount);
+            return ResponseEntity.ok().body(newAccount);
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(newAccount + " failed to save");
+        }
     }
 
     @Override

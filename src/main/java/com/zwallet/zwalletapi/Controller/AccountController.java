@@ -53,15 +53,7 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<?> postAccount(@RequestBody AccountDto dto) {
-        AccountEntity newAccount = new AccountEntity();
-        dto.setData(dto.getBalance(), newAccount);
-        try {
-            accountRepo.save(newAccount);
-            return ResponseEntity.ok().body(newAccount);
-        } catch (Exception e) {
-            return ResponseEntity.ok().body(newAccount + " failed to save");
-        }
-
+        return accountService.postAccount(dto);
     }
 
     @PutMapping
@@ -69,6 +61,12 @@ public class AccountController {
             @RequestParam(name = "userId") Integer userId) {
         return accountService.putAccount(accountId, userId);
 
+    }
+
+    @GetMapping("/bca")
+    public AccountEntity getAccountByUserName() {
+        AccountEntity foundAccount = accountRepo.findByUsername("BCA");
+        return foundAccount;
     }
 
 }

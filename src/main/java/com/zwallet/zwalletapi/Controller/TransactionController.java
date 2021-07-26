@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
+import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
 import com.zwallet.zwalletapi.Repository.TransactionRepository;
 import com.zwallet.zwalletapi.Service.TransactionImpl;
@@ -47,6 +49,12 @@ public class TransactionController {
     public IncomeOutcomeDto getByReceiverId(@PathVariable("accountId") Integer accountId)
             throws ResourceNotFoundException {
         return service.getAllTransaction(accountId);
+    }
+
+    @GetMapping("/history/{accountId}")
+    public TransactionPeriodDto getByTime(@PathVariable("accountId") Integer accountId)
+            throws ResourceNotFoundException {
+        return service.getTransactionPeriodically(accountId);
     }
 
 }
