@@ -44,9 +44,7 @@ public class AccountImp implements AccountService {
     @Override
     public ResponseEntity<?> postAccount(AccountDto dto) {
         AccountEntity newAccount = new AccountEntity();
-        UserDetailEntity newUser = new UserDetailEntity(dto.getUser().getUsername(), dto.getUser().getEmail(),
-                dto.getUser().getPassword(), dto.getUser().getPin(), dto.getUser().getUserFname(),
-                dto.getUser().getUserLname(), dto.getUser().getUserImage(), dto.getUser().getBankNumber(), "USER");
+        UserDetailEntity newUser = new UserDetailEntity();
 
         dto.setData(dto.getBalance(), newAccount, newUser);
         try {
