@@ -7,8 +7,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import com.zwallet.zwalletapi.Model.Entity.FileEntity;
+import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Property.FileStorageProperties;
 import com.zwallet.zwalletapi.Repository.FileRepository;
+import com.zwallet.zwalletapi.Repository.UserDetailRepository;
 import com.zwallet.zwalletapi.Utils.FileException.FileStorageException;
 import com.zwallet.zwalletapi.Utils.FileException.MyFileNotFoundException;
 
@@ -27,6 +29,9 @@ public class FileServiceImpl implements FileService {
     private FileRepository fileRepository;
 
     @Autowired
+    private UserDetailRepository userDetailRepository;
+
+    @Autowired
     public void FileService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
 
@@ -40,7 +45,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String storeFile(MultipartFile file) {
+    public String storeFile(MultipartFile file, Integer id) {
         // TODO Auto-generated method stub
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -51,6 +56,10 @@ public class FileServiceImpl implements FileService {
 
             Path targetLocation = this.fileStorageLocation.resolve(filename);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
+            userDetailEntity.setUserImage(filename);
+            userDetailRepository.save(userDetailEntity);
 
             FileEntity fileEntity = new FileEntity(filename, file.getContentType());
             fileRepository.save(fileEntity);

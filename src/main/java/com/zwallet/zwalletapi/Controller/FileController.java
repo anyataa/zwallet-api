@@ -38,9 +38,9 @@ public class FileController {
   @Autowired
   private FileRepository fileRepository;
 
-  @PostMapping("/upload")
-  public FileDto uploadFile(@RequestParam("file") MultipartFile file) {
-    String filename = fileServiceImpl.storeFile(file);
+  @PostMapping("/upload/{id}")
+  public FileDto uploadFile(@RequestParam("file") MultipartFile file, @PathVariable Integer id) {
+    String filename = fileServiceImpl.storeFile(file, id);
 
     String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/download/")
         .path(filename).toUriString();
@@ -48,13 +48,13 @@ public class FileController {
     return new FileDto(filename, file.getContentType(), fileDownloadUri, file.getSize());
   }
 
-  @PostMapping("/uploads")
-  public List<FileDto> uploadFiles(@RequestParam("files") MultipartFile[] files) {
-    List<FileDto> responseFiles = Arrays.asList(files).stream().map(file -> uploadFile(file))
-        .collect(Collectors.toList());
+  // @PostMapping("/uploads")
+  // public List<FileDto> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+  //   List<FileDto> responseFiles = Arrays.asList(files).stream().map(file -> uploadFile(file))
+  //       .collect(Collectors.toList());
 
-    return responseFiles;
-  }
+  //   return responseFiles;
+  // }
 
   @GetMapping("/download/{filename:.+}")
   public ResponseEntity<Resource> getFile(@PathVariable String filename, HttpServletRequest request) {
