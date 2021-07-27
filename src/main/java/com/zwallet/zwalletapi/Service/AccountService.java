@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 public interface AccountService {
 
     // Called on he dashboard to show balance
-    Optional<AccountEntity> getAccountById(Integer accountId);
+    AccountEntity getAccountById(Integer accountId) throws ResourceNotFoundException;
 
     // Called when transaction happen
     void updateBalance();
@@ -25,6 +25,8 @@ public interface AccountService {
     ResponseEntity<?> postAccount(AccountDto dto);
 
     // put
-    ResponseEntity<?> putAccount(Integer accountId, Integer userId);
+    ResponseEntity<?> putAccount(Integer accountId, Integer userId, Double balance);
+
+    AccountEntity getAccountByUserName(String username) throws ResourceNotFoundException;
 
 }

@@ -13,6 +13,7 @@ import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/account")
+@CrossOrigin(origins = "*")
 public class AccountController {
 
     @Autowired
@@ -58,14 +60,15 @@ public class AccountController {
 
     @PutMapping
     public ResponseEntity<?> putAccount(@RequestParam(name = "accountId") Integer accountId,
-            @RequestParam(name = "userId") Integer userId) {
-        return accountService.putAccount(accountId, userId);
+            @RequestParam(name = "userId") Integer userId, @RequestParam(name = "balance") Double balance) {
+        return accountService.putAccount(accountId, userId, balance);
 
     }
 
     @GetMapping("/bca")
-    public AccountEntity getAccountByUserName() {
-        AccountEntity foundAccount = accountRepo.findByUsername("BCA");
+    public AccountEntity getAccountByUserName() throws ResourceNotFoundException {
+        AccountEntity foundAccount = accountRepo.findByUsername("BCA")
+                .orElseThrow(() -> new ResourceNotFoundException("Account with username BCA cannot be found"));
         return foundAccount;
     }
 
