@@ -16,13 +16,13 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
-    // private boolean isEnabled;
+    private boolean isEnabled;
 
     // create build static method for build the user details from user entity
     public static UserDetailsImpl build(UserDetailEntity user) {
         List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(user.getUserRole());
-
-        return new UserDetailsImpl(user.getEmail(), user.getPassword(), authorities);
+        user.setActive(true);
+        return new UserDetailsImpl(user.getEmail(), user.getPassword(), authorities, user.isActive());
     }
 
     @Override
@@ -64,7 +64,7 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         // TODO Auto-generated method stub
-        return true;
+        return this.isEnabled;
     }
 
 }

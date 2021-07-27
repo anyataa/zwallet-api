@@ -69,7 +69,6 @@ public class UserDetailController {
         userDetailEntity.setUsername(dto.getUsername());
         userDetailEntity.setEmail(dto.getEmail());
         userDetailEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-        userDetailEntity.setPin(dto.getPin());
         userDetailEntity.setUserRole(dto.getUserRole());
 
         userDetailRepository.save(userDetailEntity);
@@ -107,8 +106,10 @@ public class UserDetailController {
             userCreated.setUsername(dto.getUsername());
             userCreated.setEmail(dto.getEmail());
             userCreated.setPassword(passwordEncoder.encode(dto.getPassword()));
-            userCreated.setPin(dto.getPin());
             userCreated.setUserRole("USER");
+
+            // PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity();
+            // phoneNumberEntity.setPhoneNumber(phoneNumberDto.getPhoneNumber());
 
             // save to repo
             userService.createUser(userCreated);
@@ -206,15 +207,15 @@ public class UserDetailController {
         return ResponseEntity.ok().body("Password Changed!");
     }
 
-    // ================================================Change
+    // ================================================Create & Change
     // PIN====================================================
 
-    @PutMapping("/change-pin/{id}")
+    @PutMapping("/update-pin/{id}")
     public ResponseEntity<?> updatePin(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setPin(dto.getPin());
         userDetailRepository.save(userEntity);
-        return ResponseEntity.ok().body("PIN Changed!");
+        return ResponseEntity.ok().body("Success!");
     }
 
     // ===============================================Reset
@@ -251,4 +252,5 @@ public class UserDetailController {
         return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
                 + "Your Bank Account Number : " + dto.getBankNumber());
     }
+
 }

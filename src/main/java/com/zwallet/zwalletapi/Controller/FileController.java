@@ -45,7 +45,7 @@ public class FileController {
     String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/download/")
         .path(filename).toUriString();
 
-    return new FileDto(filename, fileDownloadUri, file.getContentType(), file.getSize());
+    return new FileDto(filename, file.getContentType(), fileDownloadUri, file.getSize());
   }
 
   @PostMapping("/uploads")
