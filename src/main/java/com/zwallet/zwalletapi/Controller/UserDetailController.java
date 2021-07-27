@@ -110,7 +110,6 @@ public class UserDetailController {
             userCreated.setPassword(passwordEncoder.encode(dto.getPassword()));
             userCreated.setPin(dto.getPin());
             userCreated.setUserRole("USER");
-
             // save to repo
             userService.createUser(userCreated);
 

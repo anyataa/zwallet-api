@@ -36,4 +36,6 @@ public class TransactionDto {
 
     private Integer toAccountId;
 
+    private String username;
+
 }
