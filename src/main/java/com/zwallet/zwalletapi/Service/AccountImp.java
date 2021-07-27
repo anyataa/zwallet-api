@@ -47,7 +47,7 @@ public class AccountImp implements AccountService {
     public ResponseEntity<?> postAccount(AccountDto dto) {
         AccountEntity newAccount = new AccountEntity();
         UserDetailEntity newUser = dto.getUser();
-        dto.setData(dto.getBalance(), newAccount, newUser);
+        dto.setData(0D, newAccount, newUser);
         userRepo.save(newUser);
         newAccount.setUserId(newUser);
         repo.save(newAccount);
