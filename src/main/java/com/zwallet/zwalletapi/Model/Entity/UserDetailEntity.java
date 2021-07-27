@@ -30,21 +30,23 @@ public class UserDetailEntity {
     @Column(length = 255, nullable = false)
     private String password;
 
-    @Column(length = 6, nullable = false)
+    @Column(length = 6, nullable = true)
     private String pin;
 
+    // tidak dipakai
     @Column(length = 50, nullable = true)
     private String userFname;
 
+    // tidak dipakai
     @Column(length = 50, nullable = true)
     private String userLname;
 
     @Column(length = 255, nullable = true)
     private String userImage;
 
-    @ManyToOne
-    @JoinColumn(name = "phone_number_id", nullable = true)
-    private PhoneNumberEntity phoneNumber;
+    // @ManyToOne
+    // @JoinColumn(name = "phone_number_id", nullable = true)
+    // private PhoneNumberEntity phoneNumber;
 
     @Column(length = 50, nullable = true)
     private String bankNumber;
@@ -58,11 +60,10 @@ public class UserDetailEntity {
     @Column()
     private boolean isDeleted = false;
 
-    public UserDetailEntity(String username, String email, String password, String pin, String userRole) {
+    public UserDetailEntity(String username, String email, String password, String userRole) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.pin = pin;
         this.userRole = userRole;
     }
 

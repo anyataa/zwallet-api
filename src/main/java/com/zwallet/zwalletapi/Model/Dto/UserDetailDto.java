@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UserDetailDto {
+public class UserDetailDto extends PhoneNumberDto{
     private String username;
     private String email;
     private String password;
