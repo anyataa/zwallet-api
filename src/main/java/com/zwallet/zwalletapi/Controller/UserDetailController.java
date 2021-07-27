@@ -114,7 +114,7 @@ public class UserDetailController {
             userCreated.setEmail(dto.getEmail());
             userCreated.setPassword(passwordEncoder.encode(dto.getPassword()));
             userCreated.setUserRole("USER");
-            
+
             // save to repo
             userService.createUser(userCreated);
 

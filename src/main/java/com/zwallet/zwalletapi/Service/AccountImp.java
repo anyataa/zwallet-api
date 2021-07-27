@@ -13,10 +13,11 @@ import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class AccountImp implements AccountService {
     @Autowired
     AccountRepository repo;
@@ -24,9 +25,10 @@ public class AccountImp implements AccountService {
     UserDetailRepository userRepo;
 
     @Override
-    public Optional<AccountEntity> getAccountById(Integer accountId) {
-        // TODO Auto-generated method stub
-        return null;
+    public AccountEntity getAccountById(Integer accountId) throws ResourceNotFoundException {
+        AccountEntity foundAccount = repo.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("cannot find account with id : " + accountId));
+        return foundAccount;
     }
 
     @Override
@@ -44,27 +46,31 @@ public class AccountImp implements AccountService {
     @Override
     public ResponseEntity<?> postAccount(AccountDto dto) {
         AccountEntity newAccount = new AccountEntity();
-        UserDetailEntity newUser = new UserDetailEntity();
-
+        UserDetailEntity newUser = dto.getUser();
         dto.setData(dto.getBalance(), newAccount, newUser);
-        try {
-            userRepo.save(newUser);
-            newAccount.setUserId(newUser);
-            repo.save(newAccount);
-            return ResponseEntity.ok().body(newAccount);
-        } catch (Exception e) {
-            return ResponseEntity.ok().body(newAccount + " failed to save");
-        }
+        userRepo.save(newUser);
+        newAccount.setUserId(newUser);
+        repo.save(newAccount);
+        return ResponseEntity.ok().body(newAccount);
+
     }
 
     @Override
-    public ResponseEntity<?> putAccount(Integer accountId, Integer userId) {
+    public ResponseEntity<?> putAccount(Integer accountId, Integer userId, Double balance) {
         AccountEntity foundAccount = repo.findById(accountId).orElse(null);
         if (userRepo.findById(userId) != null) {
             foundAccount.setUserId(userRepo.findById(userId).orElse(null));
+            foundAccount.setBalance(balance);
         }
         repo.save(foundAccount);
         return ResponseEntity.ok().body("Add user id to account success");
+    }
+
+    @Override
+    public AccountEntity getAccountByUserName(String username) throws ResourceNotFoundException {
+        AccountEntity foundAccount = repo.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find account with username : " + username));
+        return foundAccount;
     }
 
 }

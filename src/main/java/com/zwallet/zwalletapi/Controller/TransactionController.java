@@ -1,10 +1,14 @@
 package com.zwallet.zwalletapi.Controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionItemDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodFilterDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
 import com.zwallet.zwalletapi.Repository.TransactionRepository;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/transaction")
+@CrossOrigin(origins = "*")
 public class TransactionController {
 
     @Autowired
@@ -35,6 +41,7 @@ public class TransactionController {
         return repo.findAll();
     }
 
+    // transfer activity (One user to another user)
     @PostMapping("/transfer")
     public ResponseEntity<?> postTransaction(@RequestBody TransactionDto dto) throws ResourceNotFoundException {
         return service.transactionTransfer(dto);
@@ -52,7 +59,7 @@ public class TransactionController {
     }
 
     @GetMapping("/history/{accountId}")
-    public TransactionPeriodDto getByTime(@PathVariable("accountId") Integer accountId)
+    public TransactionPeriodFilterDto getByTime(@PathVariable("accountId") Integer accountId)
             throws ResourceNotFoundException {
         return service.getTransactionPeriodically(accountId);
     }
