@@ -10,6 +10,7 @@ import com.zwallet.zwalletapi.Repository.UserDetailRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/friends")
+@CrossOrigin(origins = "http://localhost:3000")
 public class FriendshipController {
   @Autowired
   private FriendshipRepository friendshipRepository;
@@ -26,11 +28,18 @@ public class FriendshipController {
   @Autowired
   private UserDetailRepository userDetailRepository;
 
+  // @GetMapping("/{id}")
+  // public ResponseEntity<?> getFriends(@PathVariable Integer id){
+  //   UserDetailEntity userDetail = userDetailRepository.findById(id).get();
+  //   List<FriendshipEntity> friends = friendshipRepository.findByUser(userDetail);
+
+  //   return ResponseEntity.ok().body(friends);
+  // }
+
   @GetMapping("/{id}")
   public ResponseEntity<?> getFriends(@PathVariable Integer id){
-    UserDetailEntity userDetail = userDetailRepository.findById(id).get();
-    List<FriendshipEntity> friends = friendshipRepository.findByUser(userDetail);
-
+    List<Object> friends = friendshipRepository.findFriends(id);
+    
     return ResponseEntity.ok().body(friends);
   }
 
