@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PhoneNumberRepository extends JpaRepository<PhoneNumberEntity, Integer> {
-  
+
   List<PhoneNumberEntity> findByUser(UserDetailEntity userDetail);
+
+  PhoneNumberEntity findByUserAndIsPrimary(UserDetailEntity userDetail, boolean primary);
 }
