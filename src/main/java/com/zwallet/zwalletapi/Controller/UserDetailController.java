@@ -110,7 +110,8 @@ public class UserDetailController {
         if (user != null) {
             response.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
             response.setMessage("Email already exist!");
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+            // return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+            return ResponseEntity.ok().body(response);
         }
 
         // registering account
@@ -232,7 +233,7 @@ public class UserDetailController {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setPin(dto.getPin());
         userDetailRepository.save(userEntity);
-        return ResponseEntity.ok().body("Success!");
+        return ResponseEntity.ok().body(userEntity);
     }
 
     // ===============================================Reset
