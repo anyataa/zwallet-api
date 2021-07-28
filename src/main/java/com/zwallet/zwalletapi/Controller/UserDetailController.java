@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.zwallet.zwalletapi.Config.JWTUtils;
+import com.zwallet.zwalletapi.Model.Dto.AccountDto;
 import com.zwallet.zwalletapi.Model.Dto.JWTResponse;
 import com.zwallet.zwalletapi.Model.Dto.PhoneNumberDto;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
@@ -13,9 +14,11 @@ import com.zwallet.zwalletapi.Model.Entity.PhoneNumberEntity;
 import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.PhoneNumberRepository;
 import com.zwallet.zwalletapi.Repository.UserDetailRepository;
+import com.zwallet.zwalletapi.Service.AccountImp;
 import com.zwallet.zwalletapi.Service.AccountService;
 import com.zwallet.zwalletapi.Service.UserDetailsImpl;
 import com.zwallet.zwalletapi.Service.UserServiceImpl;
+import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -97,8 +100,9 @@ public class UserDetailController {
     // Up===================================================
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registrasi(@RequestBody UserDetailDto dto) {
+    public ResponseEntity<?> registrasi(@RequestBody UserDetailDto dto) throws ResourceNotFoundException {
         StatusMessageDto<UserDetailEntity> response = new StatusMessageDto<>();
+        AccountDto newAccount = new AccountDto();
         // checking user exist or not
         UserDetailEntity user = userDetailRepository.findByEmail(dto.getEmail());
         if (user != null) {
@@ -116,13 +120,14 @@ public class UserDetailController {
             userCreated.setUserRole("USER");
 
             // save to repo
-            userService.createUser(userCreated);
+            // userService.createUser(userCreated);
+            newAccount.setUser(userCreated);
+            accountService.postAccount(newAccount);
 
             PhoneNumberEntity phone = new PhoneNumberEntity();
             phone.setPhoneNumber(dto.getPhoneNumber());
             phone.setUser(userCreated);
             phoneRepository.save(phone);
-
 
             response.setStatus(HttpStatus.CREATED.toString());
             response.setMessage("User created!");
