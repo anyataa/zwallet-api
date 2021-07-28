@@ -233,7 +233,7 @@ public class UserDetailController {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setPin(dto.getPin());
         userDetailRepository.save(userEntity);
-        return ResponseEntity.ok().body("Success!");
+        return ResponseEntity.ok().body(userEntity);
     }
 
     // ===============================================Reset
