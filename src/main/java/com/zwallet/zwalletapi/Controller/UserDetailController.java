@@ -28,6 +28,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserDetailController {
     @Autowired
     UserDetailRepository userDetailRepository;
@@ -108,7 +110,8 @@ public class UserDetailController {
         if (user != null) {
             response.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
             response.setMessage("Email already exist!");
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+            // return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+            return ResponseEntity.ok().body(response);
         }
 
         // registering account
