@@ -1,6 +1,5 @@
 package com.zwallet.zwalletapi.Model.Entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,16 +14,22 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "account_table")
-public class AccountEntity {
+@Table(name = "file_table")
+public class FileEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_account")
-    private Integer accountId;
-    @Column(name = "balance")
-    private Double balance;
-    @OneToOne
-    @JoinColumn(name = "user_id", insertable = true, updatable = true)
-    private UserDetailEntity userId;
+    private Integer fileId;
 
+    private String fileName;
+
+    private String fileType;
+
+    // @OneToOne
+    // @JoinColumn(name = "user_id", nullable = false)
+    // private UserDetailEntity userDetailEntity;
+
+    public FileEntity(String fileName, String fileType) {
+        this.fileName = fileName;
+        this.fileType = fileType;
+    }
 }
