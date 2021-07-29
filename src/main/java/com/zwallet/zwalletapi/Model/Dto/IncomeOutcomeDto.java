@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 public class IncomeOutcomeDto {
     private Double sumIncome;
     private Double sumOutcome;
-    private List<TransactionEntity> listIncome;
-    private List<TransactionEntity> listOutcome;
-    private List<TransactionEntity> listTransaction;
+    private List<TransactionItemDto> listIncome;
+    private List<TransactionItemDto> listOutcome;
+    private List<TransactionItemDto> listTransaction;
 
-    public IncomeOutcomeDto(Double sumIncome, Double sumOutcome, List<TransactionEntity> listIncome,
-            List<TransactionEntity> listOutcome, List<TransactionEntity> listTransaction) {
+    public IncomeOutcomeDto(Double sumIncome, Double sumOutcome, List<TransactionItemDto> listIncome,
+            List<TransactionItemDto> listOutcome, List<TransactionItemDto> listTransaction) {
         this.sumIncome = sumIncome;
         this.sumOutcome = sumOutcome;
         this.listIncome = listIncome;

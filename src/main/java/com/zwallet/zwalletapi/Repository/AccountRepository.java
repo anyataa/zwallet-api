@@ -1,8 +1,10 @@
 package com.zwallet.zwalletapi.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
+import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

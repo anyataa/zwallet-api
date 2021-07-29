@@ -40,15 +40,33 @@ public class TransactionImpl implements TransactionService {
         AccountEntity foundAccount = accountRepo.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot find account with id : " + accountId));
 
-        // Receiver : Income
+        // As Receiver : Income
         List<TransactionEntity> foundIncome = repo.findByToAccountId(foundAccount);
+        List<TransactionItemDto> foundFilterIncome = new ArrayList<>();
+        for (TransactionEntity item : foundIncome) {
+            TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
+                    item.getTransactionNotes());
+            foundFilterIncome.add(filter);
+        }
+        // Sum Income
         Double sumIncome = 0D;
         for (TransactionEntity item : foundIncome) {
             sumIncome = sumIncome + item.getTransactionAmount();
         }
 
-        // Sender : Outcome
+        // As Sender : Outcome
         List<TransactionEntity> foundOutcome = repo.findByFromAccountId(foundAccount);
+        List<TransactionItemDto> foundFilterOutcome = new ArrayList<>();
+        for (TransactionEntity item : foundOutcome) {
+            TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
+                    item.getTransactionNotes());
+            foundFilterOutcome.add(filter);
+        }
+        // Sum Outcome
         Double sumOutcome = 0D;
         for (TransactionEntity item : foundOutcome) {
             sumOutcome += item.getTransactionAmount();
@@ -56,9 +74,16 @@ public class TransactionImpl implements TransactionService {
 
         // All Transaction
         List<TransactionEntity> foundTransaction = repo.findAllTransactionByAccountId(foundAccount);
-
-        IncomeOutcomeDto data = new IncomeOutcomeDto(sumIncome, sumOutcome, foundIncome, foundOutcome,
-                foundTransaction);
+        List<TransactionItemDto> foundFilterAll = new ArrayList<>();
+        for (TransactionEntity item : foundTransaction) {
+            TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
+                    item.getTransactionNotes());
+            foundFilterAll.add(filter);
+        }
+        IncomeOutcomeDto data = new IncomeOutcomeDto(sumIncome, sumOutcome, foundFilterIncome, foundFilterOutcome,
+                foundFilterAll);
         return data;
     }
 
@@ -66,9 +91,11 @@ public class TransactionImpl implements TransactionService {
     public ResponseEntity<?> transactionTransfer(TransactionDto dto) throws ResourceNotFoundException {
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
-
-        AccountEntity receiver = accountRepo.findById(dto.getToAccountId())
-                .orElseThrow(() -> new ResourceNotFoundException("Receiver with this id is not exist"));
+        AccountEntity receiver = accountRepo.getAccountUserByUserId(dto.getToUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID"));
+        // AccountEntity receiver = accountRepo.findById(dto.getToAccountId())
+        // .orElseThrow(() -> new ResourceNotFoundException("Receiver with this id is
+        // not exist"));
         // --------- Will Change set as the active user who sends the money -----------
         AccountEntity sender = accountRepo.findById(dto.getFromAccountId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sender with this id is not exist"));
