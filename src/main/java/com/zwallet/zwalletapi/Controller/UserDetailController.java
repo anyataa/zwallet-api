@@ -1,6 +1,8 @@
 package com.zwallet.zwalletapi.Controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,8 +12,10 @@ import com.zwallet.zwalletapi.Model.Dto.JWTResponse;
 import com.zwallet.zwalletapi.Model.Dto.PhoneNumberDto;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.UserDetailDto;
+import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.PhoneNumberEntity;
 import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
+import com.zwallet.zwalletapi.Repository.AccountRepository;
 import com.zwallet.zwalletapi.Repository.PhoneNumberRepository;
 import com.zwallet.zwalletapi.Repository.UserDetailRepository;
 import com.zwallet.zwalletapi.Service.AccountImp;
@@ -72,6 +76,9 @@ public class UserDetailController {
     @Autowired
     private PhoneNumberRepository phoneRepository;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
     // ======================================Add Vendor(Merchant &
     // Bank)===================================
 
@@ -129,6 +136,7 @@ public class UserDetailController {
 
             PhoneNumberEntity phone = new PhoneNumberEntity();
             phone.setPhoneNumber(dto.getPhoneNumber());
+            phone.setPrimary(true);
             phone.setUser(userCreated);
             phoneRepository.save(phone);
 
@@ -166,10 +174,17 @@ public class UserDetailController {
             // get role
             Set<String> userRoles = userDetailsImpl.getAuthorities().stream().map(userRole -> userRole.getAuthority())
                     .collect(Collectors.toSet());
+            Map<String, Object> userData = new HashMap<>();
+            UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(userDetailsImpl.getUsername());
+            PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
+            AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
+            // userData.put("user", userDetailEntity);
+            userData.put("phonenumber", phoneNumberEntity.getPhoneNumber());
+            userData.put("account", accountEntity);
 
             response.setStatus(HttpStatus.OK.toString());
             response.setMessage("Login success!");
-            response.setData(new JWTResponse(jwt, userDetailsImpl.getUsername(), userRoles));
+            response.setData(new JWTResponse(jwt, userDetailsImpl.getUsername(), userRoles, userData));
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
