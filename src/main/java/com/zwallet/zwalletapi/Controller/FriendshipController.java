@@ -28,23 +28,23 @@ public class FriendshipController {
   @Autowired
   private UserDetailRepository userDetailRepository;
 
-  // @GetMapping("/{id}")
-  // public ResponseEntity<?> getFriends(@PathVariable Integer id){
-  //   UserDetailEntity userDetail = userDetailRepository.findById(id).get();
-  //   List<FriendshipEntity> friends = friendshipRepository.findByUser(userDetail);
-
-  //   return ResponseEntity.ok().body(friends);
-  // }
-
   @GetMapping("/{id}")
-  public ResponseEntity<?> getFriends(@PathVariable Integer id){
-    List<Object> friends = friendshipRepository.findFriends(id);
-    
+  public ResponseEntity<?> getFriends(@PathVariable Integer id) {
+    UserDetailEntity userDetail = userDetailRepository.findById(id).get();
+    List<FriendshipEntity> friends = friendshipRepository.findByUser(userDetail);
+
     return ResponseEntity.ok().body(friends);
   }
 
+  // @GetMapping("/{id}")
+  // public ResponseEntity<?> getFriends(@PathVariable Integer id){
+  // List<Object> friends = friendshipRepository.findFriends(id);
+
+  // return ResponseEntity.ok().body(friends);
+  // }
+
   @PostMapping("/add")
-  public ResponseEntity<?> addFriends(@RequestBody FriendshipDto dto ){
+  public ResponseEntity<?> addFriends(@RequestBody FriendshipDto dto) {
     FriendshipEntity friend = new FriendshipEntity();
     UserDetailEntity user = userDetailRepository.findById(dto.getUserId()).get();
     UserDetailEntity newFriend = userDetailRepository.findById(dto.getFriendId()).get();

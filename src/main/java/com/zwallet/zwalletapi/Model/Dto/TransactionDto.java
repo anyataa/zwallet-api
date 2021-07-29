@@ -38,4 +38,6 @@ public class TransactionDto {
 
     private String username;
 
+    private Integer toUserId;
+
 }
