@@ -92,7 +92,7 @@ public class TransactionImpl implements TransactionService {
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
         AccountEntity receiver = accountRepo.getAccountUserByUserId(dto.getToUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID" + dto.getToUserId()));
         // AccountEntity receiver = accountRepo.findById(dto.getToAccountId())
         // .orElseThrow(() -> new ResourceNotFoundException("Receiver with this id is
         // not exist"));
