@@ -51,17 +51,6 @@ public class FriendshipController {
     return ResponseEntity.ok().body(friendItems);
   }
 
-  // @GetMapping("/{id}")
-  // public ResponseEntity<?> getFriends(@PathVariable Integer id){
-  //   List<Object> friends = friendshipRepository.findFriends(id);
-  //   List<FriendshipItemDto> friendData = new ArrayList<>();
-
-  //   for(Object item : friends){
-  //     // FriendshipItemDto newFriends = new FriendshipItemDto(item[0]);
-  //     System.out.println(item.getClass());
-  //   }
-  //   return ResponseEntity.ok().body(friends);
-  // }
 
   @PostMapping("/add")
   public ResponseEntity<?> addFriends(@RequestBody FriendshipDto dto) {
