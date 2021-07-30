@@ -150,7 +150,7 @@ public class UserDetailController {
             // response.setData(userCreated);
             response.setData(dataFilter);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(dataFilter);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             // TODO: handle exception
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
