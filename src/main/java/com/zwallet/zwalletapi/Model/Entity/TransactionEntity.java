@@ -51,9 +51,14 @@ public class TransactionEntity {
     @JoinColumn(name = "from_account_id", nullable = false, updatable = true, insertable = true)
     private AccountEntity fromAccountId;
 
+    @Column(name = "from_account_balance", nullable = true)
+    private Double fromAccountBalance;
+
     // Receiver | Type Transaction : 1 Credit
     @ManyToOne
     @JoinColumn(name = "to_account_id", nullable = false, updatable = true, insertable = true)
     private AccountEntity toAccountId;
 
+    @Column(name = "to_account_balance", nullable = true)
+    private Double toAccountBalance;
 }
