@@ -40,4 +40,8 @@ public class TransactionDto {
 
     private Integer toUserId;
 
+    private Double fromAccountBalance;
+
+    private Double toAccountBalance;
+
 }
