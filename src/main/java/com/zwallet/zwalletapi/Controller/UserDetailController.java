@@ -130,10 +130,6 @@ public class UserDetailController {
             userCreated.setPassword(passwordEncoder.encode(dto.getPassword()));
             userCreated.setUserRole("USER");
 
-            // User Filter
-            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(), userCreated.getUserId(),
-                    dto.getUsername(), null, dto.getEmail(), null);
-
             // save to repo
             // userService.createUser(userCreated);
             newAccount.setUser(userCreated);
@@ -144,6 +140,9 @@ public class UserDetailController {
             phone.setPrimary(true);
             phone.setUser(userCreated);
             phoneRepository.save(phone);
+            // User Filter
+            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(), userCreated.getUserId(),
+                    dto.getUsername(), null, dto.getEmail(), null);
 
             response.setStatus(HttpStatus.CREATED.toString());
             response.setMessage("User created!");
