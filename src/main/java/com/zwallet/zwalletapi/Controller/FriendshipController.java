@@ -38,7 +38,7 @@ public class FriendshipController {
   @GetMapping("/{id}")
   public ResponseEntity<?> getFriends(@PathVariable Integer id) {
     UserDetailEntity userDetail = userDetailRepository.findById(id).get();
-    PhoneNumberEntity phoneNumber = phoneNumberRepository.findById(id).get();
+    PhoneNumberEntity phoneNumber = phoneNumberRepository.findByUserAndIsPrimary(userDetail, true);
     List<FriendshipEntity> friends = friendshipRepository.findByUser(userDetail);
     
     List<FriendshipItemDto> friendItems = new ArrayList<>();
