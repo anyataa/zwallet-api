@@ -1,11 +1,15 @@
 package com.zwallet.zwalletapi.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.zwallet.zwalletapi.Model.Dto.FriendshipDto;
+import com.zwallet.zwalletapi.Model.Dto.FriendshipItemDto;
 import com.zwallet.zwalletapi.Model.Entity.FriendshipEntity;
+import com.zwallet.zwalletapi.Model.Entity.PhoneNumberEntity;
 import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.FriendshipRepository;
+import com.zwallet.zwalletapi.Repository.PhoneNumberRepository;
 import com.zwallet.zwalletapi.Repository.UserDetailRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +32,34 @@ public class FriendshipController {
   @Autowired
   private UserDetailRepository userDetailRepository;
 
+  @Autowired
+  private PhoneNumberRepository phoneNumberRepository;
+
   @GetMapping("/{id}")
   public ResponseEntity<?> getFriends(@PathVariable Integer id) {
     UserDetailEntity userDetail = userDetailRepository.findById(id).get();
+    PhoneNumberEntity phoneNumber = phoneNumberRepository.findById(id).get();
     List<FriendshipEntity> friends = friendshipRepository.findByUser(userDetail);
+    
+    List<FriendshipItemDto> friendItems = new ArrayList<>();
 
-    return ResponseEntity.ok().body(friends);
+    for(FriendshipEntity item : friends){
+      FriendshipItemDto newFriends = new FriendshipItemDto(item.getFriendshipId(), userDetail.getUserId(), userDetail.getUsername(), userDetail.getUserImage(), phoneNumber.getPhoneNumber());
+      friendItems.add(newFriends);
+    }
+
+    return ResponseEntity.ok().body(friendItems);
   }
 
   // @GetMapping("/{id}")
   // public ResponseEntity<?> getFriends(@PathVariable Integer id){
   //   List<Object> friends = friendshipRepository.findFriends(id);
-    
+  //   List<FriendshipItemDto> friendData = new ArrayList<>();
+
+  //   for(Object item : friends){
+  //     // FriendshipItemDto newFriends = new FriendshipItemDto(item[0]);
+  //     System.out.println(item.getClass());
+  //   }
   //   return ResponseEntity.ok().body(friends);
   // }
 
