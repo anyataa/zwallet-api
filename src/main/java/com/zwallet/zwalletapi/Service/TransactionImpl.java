@@ -10,6 +10,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
+import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionItemDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
@@ -89,10 +90,11 @@ public class TransactionImpl implements TransactionService {
 
     @Override
     public ResponseEntity<?> transactionTransfer(TransactionDto dto) throws ResourceNotFoundException {
+        StatusMessageDto<TransactionEntity> response = new StatusMessageDto<>();
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
         AccountEntity receiver = accountRepo.getAccountUserByUserId(dto.getToUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID" + dto.getToUserId()));
         // AccountEntity receiver = accountRepo.findById(dto.getToAccountId())
         // .orElseThrow(() -> new ResourceNotFoundException("Receiver with this id is
         // not exist"));
@@ -108,6 +110,8 @@ public class TransactionImpl implements TransactionService {
         newTransaction.setTransactionDetail(1);
         newTransaction.setFromAccountId(sender);
         newTransaction.setToAccountId(receiver);
+        newTransaction.setToAccountBalance(receiver.getBalance() + dto.getTransactionAmount());
+        newTransaction.setFromAccountBalance(sender.getBalance() - dto.getTransactionAmount());
         // Check balance
         if (sender.getBalance() <= dto.getTransactionAmount()) {
             return ResponseEntity.ok().body("Amount Exceeds Balance");
@@ -123,7 +127,8 @@ public class TransactionImpl implements TransactionService {
             repo.save(newTransaction);
             accountRepo.save(sender);
             accountRepo.save(receiver);
-            return ResponseEntity.ok().body(newTransaction);
+            response.setData(newTransaction);
+            return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             newTransaction.setIsSuccess(1);
             return ResponseEntity.ok().body(e.getMessage());
