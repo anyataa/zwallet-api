@@ -11,6 +11,7 @@ import com.zwallet.zwalletapi.Model.Dto.AccountDto;
 import com.zwallet.zwalletapi.Model.Dto.JWTResponse;
 import com.zwallet.zwalletapi.Model.Dto.PhoneNumberDto;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
+import com.zwallet.zwalletapi.Model.Dto.UserDataFilter;
 import com.zwallet.zwalletapi.Model.Dto.UserDetailDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.PhoneNumberEntity;
@@ -110,7 +111,7 @@ public class UserDetailController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registrasi(@RequestBody UserDetailDto dto) throws ResourceNotFoundException {
-        StatusMessageDto<UserDetailEntity> response = new StatusMessageDto<>();
+        StatusMessageDto<UserDataFilter> response = new StatusMessageDto<>();
         AccountDto newAccount = new AccountDto();
         // checking user exist or not
         UserDetailEntity user = userDetailRepository.findByEmail(dto.getEmail());
@@ -129,6 +130,10 @@ public class UserDetailController {
             userCreated.setPassword(passwordEncoder.encode(dto.getPassword()));
             userCreated.setUserRole("USER");
 
+            // User Filter
+            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(), userCreated.getUserId(),
+                    dto.getUsername(), null, dto.getEmail(), null);
+
             // save to repo
             // userService.createUser(userCreated);
             newAccount.setUser(userCreated);
@@ -142,9 +147,10 @@ public class UserDetailController {
 
             response.setStatus(HttpStatus.CREATED.toString());
             response.setMessage("User created!");
-            response.setData(userCreated);
+            // response.setData(userCreated);
+            response.setData(dataFilter);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.CREATED).body(dataFilter);
         } catch (Exception e) {
             // TODO: handle exception
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
@@ -179,12 +185,22 @@ public class UserDetailController {
             PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
             AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
             // userData.put("user", userDetailEntity);
+            // UserDataFilter dataFilter = new UserDataFilter(userDetailEntity.getUserId(),
+            // userDetailEntity.getUsername(),
+            // userDetailEntity.getUserImage(), phoneNumberEntity.getPhoneNumber());
             userData.put("phonenumber", phoneNumberEntity.getPhoneNumber());
-            userData.put("account", accountEntity);
+            userData.put("userId", userDetailEntity.getUserId());
+            userData.put("userName", userDetailEntity.getUsername());
+            userData.put("userImage", userDetailEntity.getUserImage());
+            userData.put("userEmail", userDetailEntity.getEmail());
+            userData.put("userPin", userDetailEntity.getPin());
+            // userData.put("account", accountEntity);
 
             response.setStatus(HttpStatus.OK.toString());
             response.setMessage("Login success!");
             response.setData(new JWTResponse(jwt, userDetailsImpl.getUsername(), userRoles, userData));
+            // response.setData(new JWTResponse(jwt, userDetailsImpl.getUsername(),
+            // userRoles, dataFilter));
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
