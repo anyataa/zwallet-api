@@ -13,6 +13,7 @@ public class JWTResponse {
     private Set<String> userRole;
     private String type = "Bearer";
     private Object user;
+    private UserDataFilter filter;
 
     public JWTResponse(String token, String email, Set<String> userRole) {
         this.token = token;
@@ -27,5 +28,12 @@ public class JWTResponse {
         this.user = user;
     }
 
-    
+    public JWTResponse(String token, String email, Set<String> userRole, String type, UserDataFilter filter) {
+        this.token = token;
+        this.email = email;
+        this.userRole = userRole;
+        this.type = type;
+        this.filter = filter;
+    }
+
 }
