@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FriendshipDto {
-  public Integer userId;
-  public Integer friendId;
+public class PhoneNumberDto {
+  private String phoneNumber;
+  private boolean isPrimary;
+  private Integer userId;
+  private String phoneNumberId;
 }

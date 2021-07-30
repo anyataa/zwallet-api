@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FriendshipDto {
-  public Integer userId;
-  public Integer friendId;
+public class FileDto {
+    private String fileName;
+    private String fileType;
+    private String fileUrl;
+    private long fileSize;
 }

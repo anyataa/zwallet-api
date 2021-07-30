@@ -27,7 +27,7 @@ public class PhoneNumberEntity {
   @Column()
   private boolean isDeleted;
 
-  @Column()
+  @Column(nullable = true)
   private boolean isPrimary;
 
   @ManyToOne

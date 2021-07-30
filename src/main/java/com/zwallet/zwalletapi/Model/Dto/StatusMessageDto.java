@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FriendshipDto {
-  public Integer userId;
-  public Integer friendId;
+public class StatusMessageDto<T> {
+    private String status;
+    private String message;
+    private T data;
 }
