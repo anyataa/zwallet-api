@@ -286,4 +286,18 @@ public class UserDetailController {
                 + "Your Bank Account Number : " + dto.getBankNumber());
     }
 
+    @GetMapping("/pin")
+    // Low : Secure
+    // buat 1 dtoChangePin , yang ngirim 2 (pinSekarang, id)
+    public ResponseEntity<?> checkPin(@RequestBody String pinSekarang, Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        if (userEntity.getPin() == pinSekarang) {
+            return ResponseEntity.ok().body("sama");
+        } else {
+
+        }
+        return ResponseEntity.ok()
+                .body("Your Bank Account Number Has Been Registered Successfully! " + "Your Bank Account Number : ");
+    }
+
 }
