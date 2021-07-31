@@ -15,14 +15,16 @@ public class IncomeOutcomeDto {
     private List<TransactionItemDto> listIncome;
     private List<TransactionItemDto> listOutcome;
     private List<TransactionItemDto> listTransaction;
+    private List<?> listBalance;
 
     public IncomeOutcomeDto(Double sumIncome, Double sumOutcome, List<TransactionItemDto> listIncome,
-            List<TransactionItemDto> listOutcome, List<TransactionItemDto> listTransaction) {
+            List<TransactionItemDto> listOutcome, List<TransactionItemDto> listTransaction, List<?> listBalance) {
         this.sumIncome = sumIncome;
         this.sumOutcome = sumOutcome;
         this.listIncome = listIncome;
         this.listOutcome = listOutcome;
         this.listTransaction = listTransaction;
+        this.listBalance = listBalance;
     }
 
 }

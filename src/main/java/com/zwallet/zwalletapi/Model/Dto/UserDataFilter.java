@@ -12,15 +12,20 @@ public class UserDataFilter {
     private String userImage;
     private String userEmail;
     private String userPin;
+    private Integer accountId;
+    private Double accountBalance;
 
     public UserDataFilter(String phoneNumber, Integer userId, String userName, String userImage, String userEmail,
-            String userPin) {
+            String userPin, Integer accountId, Double accountBalance) {
         this.phoneNumber = phoneNumber;
         this.userId = userId;
         this.userName = userName;
         this.userImage = userImage;
         this.userEmail = userEmail;
         this.userPin = userPin;
+        this.accountId = accountId;
+        this.accountBalance = accountBalance;
+
     }
 
     // userData.put("phonenumber", phoneNumberEntity.getPhoneNumber());
