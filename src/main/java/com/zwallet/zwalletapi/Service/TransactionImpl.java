@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionBalanceHistoryDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionItemDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
@@ -23,6 +24,7 @@ import com.zwallet.zwalletapi.Repository.TransactionRepository;
 import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -83,8 +85,11 @@ public class TransactionImpl implements TransactionService {
                     item.getTransactionNotes());
             foundFilterAll.add(filter);
         }
+
+        // Balance History
+        List<?> foundBalance = repo.findTransactionBalanceHistory(foundAccount);
         IncomeOutcomeDto data = new IncomeOutcomeDto(sumIncome, sumOutcome, foundFilterIncome, foundFilterOutcome,
-                foundFilterAll);
+                foundFilterAll, foundBalance);
         return data;
     }
 
@@ -190,6 +195,24 @@ public class TransactionImpl implements TransactionService {
             newTransaction.setIsSuccess(1);
             return ResponseEntity.ok().body(e.getMessage());
         }
+    }
+
+    @Override
+    public ResponseEntity<?> findTransactionBalanceHistory(Integer accountId) throws ResourceNotFoundException {
+        StatusMessageDto response = new StatusMessageDto<>();
+        AccountEntity foundAccount = accountRepo.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("cannot found history with this accountid"));
+        try {
+            response.setMessage("Success");
+            response.setStatus(HttpStatus.OK.toString());
+            response.setData(repo.findTransactionBalanceHistory(foundAccount));
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            response.setMessage("Failed");
+            response.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
+            return ResponseEntity.ok().body(response);
+        }
+
     }
 
 }
