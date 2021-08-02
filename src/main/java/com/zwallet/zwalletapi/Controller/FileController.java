@@ -18,6 +18,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/files")
+@CrossOrigin(value = "*")
 public class FileController {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileController.class);
 
@@ -49,11 +51,13 @@ public class FileController {
   }
 
   // @PostMapping("/uploads")
-  // public List<FileDto> uploadFiles(@RequestParam("files") MultipartFile[] files) {
-  //   List<FileDto> responseFiles = Arrays.asList(files).stream().map(file -> uploadFile(file))
-  //       .collect(Collectors.toList());
+  // public List<FileDto> uploadFiles(@RequestParam("files") MultipartFile[]
+  // files) {
+  // List<FileDto> responseFiles = Arrays.asList(files).stream().map(file ->
+  // uploadFile(file))
+  // .collect(Collectors.toList());
 
-  //   return responseFiles;
+  // return responseFiles;
   // }
 
   @GetMapping("/download/{filename:.+}")
