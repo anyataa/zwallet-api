@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionBalanceHistoryDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodFilterDto;
@@ -27,4 +28,6 @@ public interface TransactionService {
             AccountEntity receiver, AccountEntity sender) throws ResourceNotFoundException;
 
     TransactionPeriodFilterDto getTransactionPeriodically(Integer accountId) throws ResourceNotFoundException;
+
+    ResponseEntity<?> findTransactionBalanceHistory(Integer accountId) throws ResourceNotFoundException;
 }
