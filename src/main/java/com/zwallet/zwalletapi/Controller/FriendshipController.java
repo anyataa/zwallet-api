@@ -44,7 +44,7 @@ public class FriendshipController {
     List<FriendshipItemDto> friendItems = new ArrayList<>();
 
     for(FriendshipEntity item : friends){
-      FriendshipItemDto newFriends = new FriendshipItemDto(item.getFriendshipId(), userDetail.getUserId(), userDetail.getUsername(), userDetail.getUserImage(), phoneNumber.getPhoneNumber());
+      FriendshipItemDto newFriends = new FriendshipItemDto(item.getFriend().getUserId(), userDetail.getUserId(), item.getFriend().getUsername(), userDetail.getUserImage(), phoneNumber.getPhoneNumber());
       friendItems.add(newFriends);
     }
 

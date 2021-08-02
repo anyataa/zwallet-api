@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendshipItemDto {
-  private Integer friendshipId;
+  private Integer friendId;
   private Integer userId;
   private String username;
   private String userImage;
