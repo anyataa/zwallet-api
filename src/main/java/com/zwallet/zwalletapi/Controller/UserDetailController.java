@@ -134,6 +134,7 @@ public class UserDetailController {
             // userService.createUser(userCreated);
             newAccount.setUser(userCreated);
             accountService.postAccount(newAccount);
+            AccountEntity foundAccount = accountRepository.findByUserId(userCreated);
 
             PhoneNumberEntity phone = new PhoneNumberEntity();
             phone.setPhoneNumber(dto.getPhoneNumber());
@@ -142,7 +143,8 @@ public class UserDetailController {
             phoneRepository.save(phone);
             // User Filter
             UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(), userCreated.getUserId(),
-                    dto.getUsername(), null, dto.getEmail(), null);
+                    dto.getUsername(), null, dto.getEmail(), null, foundAccount.getAccountId(),
+                    newAccount.getBalance());
 
             response.setStatus(HttpStatus.CREATED.toString());
             response.setMessage("User created!");
@@ -193,6 +195,8 @@ public class UserDetailController {
             userData.put("userImage", userDetailEntity.getUserImage());
             userData.put("userEmail", userDetailEntity.getEmail());
             userData.put("userPin", userDetailEntity.getPin());
+            userData.put("accountId", accountEntity.getAccountId());
+            userData.put("accountBalance", accountEntity.getBalance());
             // userData.put("account", accountEntity);
 
             response.setStatus(HttpStatus.OK.toString());
