@@ -27,6 +27,6 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     @Query(value = "SELECT * FROM transaction_table WHERE  to_account_id = ?1 AND transaction_timestamp BETWEEN curdate()-8 AND curdate()-30  OR from_account_id = ?1 AND transaction_timestamp BETWEEN curdate()-8 AND curdate()-30 ORDER BY transaction_timestamp", nativeQuery = true)
     List<TransactionEntity> findAllTransactionMonth(AccountEntity accountId);
 
-    @Query(value = "SELECT if(to_account_id = ?1 , from_account_balance , to_account_balance), transaction_timestamp FROM transaction_table WHERE transaction_timestamp BETWEEN curdate()-7 AND curdate()  AND  from_account_id = ?1 OR transaction_timestamp BETWEEN curdate()-7 AND curdate()  AND to_account_id = ?1 ", nativeQuery = true)
+    @Query(value = "SELECT if(from_account_id = ?1 , from_account_balance , to_account_balance), transaction_timestamp FROM transaction_table WHERE transaction_timestamp BETWEEN curdate()-7 AND curdate()  AND  from_account_id = ?1 OR transaction_timestamp BETWEEN curdate()-7 AND curdate()  AND to_account_id = ?1 ", nativeQuery = true)
     List<?> findTransactionBalanceHistory(AccountEntity accountId);
 }
