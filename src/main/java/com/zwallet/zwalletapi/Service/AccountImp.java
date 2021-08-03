@@ -59,11 +59,11 @@ public class AccountImp implements AccountService {
     public ResponseEntity<?> putAccount(Integer accountId, Integer userId, Double balance) {
         AccountEntity foundAccount = repo.findById(accountId).orElse(null);
         if (userRepo.findById(userId) != null) {
-            foundAccount.setUserId(userRepo.findById(userId).orElse(null));
+            // foundAccount.setUserId(userRepo.findById(userId).orElse(null));
             foundAccount.setBalance(balance);
         }
         repo.save(foundAccount);
-        return ResponseEntity.ok().body("Add user id to account success");
+        return ResponseEntity.ok().body("Add balance to account success");
     }
 
     @Override

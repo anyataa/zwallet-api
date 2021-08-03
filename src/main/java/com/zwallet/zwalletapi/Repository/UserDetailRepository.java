@@ -18,4 +18,11 @@ public interface UserDetailRepository extends JpaRepository<UserDetailEntity, In
     List<UserDetailEntity> findAllActive();
 
     List<UserDetailEntity> findByIsDeleted(boolean status);
+
+    @Query(value = "SELECT * FROM user_detail_table WHERE user_role = 'BANK'", nativeQuery = true)
+    List<UserDetailEntity> findBank();
+
+    @Query(value = "   SELECT * FROM user_detail_table WHERE user_role = 'BANK' AND username LIKE ?1 ", nativeQuery = true)
+    UserDetailEntity findBankByName(String bankName);
+
 }
