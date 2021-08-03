@@ -78,11 +78,14 @@ public class UserDetailController {
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody UserDetailDto dto) {
         UserDetailEntity userDetailEntity = new UserDetailEntity();
+        AccountDto newAccount = new AccountDto();
         userDetailEntity.setUsername(dto.getUsername());
         userDetailEntity.setEmail(dto.getEmail());
         userDetailEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
         userDetailEntity.setUserRole(dto.getUserRole());
-        userDetailRepository.save(userDetailEntity);
+        // userDetailRepository.save(userDetailEntity);
+        newAccount.setUser(userDetailEntity);
+        accountService.postAccount(newAccount);
         return ResponseEntity.ok().body("Success!");
     }
 
@@ -230,7 +233,7 @@ public class UserDetailController {
         return ResponseEntity.ok().body("Logout");
     }
 
-    //ON GOING
+    // ON GOING
     // ======Change Password - Profile======
 
     @PutMapping("/change-password/{id}")
@@ -257,16 +260,16 @@ public class UserDetailController {
                 userData.put("userPin", userEntity.getPin());
                 userData.put("accountId", accountEntity.getAccountId());
                 userData.put("accountBalance", accountEntity.getBalance());
-        
-                return ResponseEntity.ok().body(userData);         
-            } catch (Exception e) {
-                return ResponseEntity.ok().body("failed");            
-            }  
-        }else{
-            return ResponseEntity.ok().body("error");
-        }          
 
-     }
+                return ResponseEntity.ok().body(userData);
+            } catch (Exception e) {
+                return ResponseEntity.ok().body("failed");
+            }
+        } else {
+            return ResponseEntity.ok().body("error");
+        }
+
+    }
 
     // ======Create & New PIN======
 
@@ -323,26 +326,30 @@ public class UserDetailController {
     // ======Bank Number======
 
     // @PutMapping("/banknumber/{id}")
-    // public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-    //     UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-    //     userEntity.setBankNumber(dto.getBankNumber());
-    //     userDetailRepository.save(userEntity);
-    //     return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
-    //             + "Your Bank Account Number : " + dto.getBankNumber());
+    // public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto,
+    // @PathVariable Integer id) {
+    // UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+    // userEntity.setBankNumber(dto.getBankNumber());
+    // userDetailRepository.save(userEntity);
+    // return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered
+    // Successfully! "
+    // + "Your Bank Account Number : " + dto.getBankNumber());
     // }
 
     // @GetMapping("/pin")
     // // Low : Secure
     // // buat 1 dtoChangePin , yang ngirim 2 (pinSekarang, id)
-    // public ResponseEntity<?> checkPin(@RequestBody String pinSekarang, Integer id) {
-    //     UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-    //     if (userEntity.getPin() == pinSekarang) {
-    //         return ResponseEntity.ok().body("sama");
-    //     } else {
+    // public ResponseEntity<?> checkPin(@RequestBody String pinSekarang, Integer
+    // id) {
+    // UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+    // if (userEntity.getPin() == pinSekarang) {
+    // return ResponseEntity.ok().body("sama");
+    // } else {
 
-    //     }
-    //     return ResponseEntity.ok()
-    //             .body("Your Bank Account Number Has Been Registered Successfully! " + "Your Bank Account Number : ");
+    // }
+    // return ResponseEntity.ok()
+    // .body("Your Bank Account Number Has Been Registered Successfully! " + "Your
+    // Bank Account Number : ");
     // }
 
     // ======Get User======
@@ -368,20 +375,20 @@ public class UserDetailController {
         return ResponseEntity.badRequest().body("Id not found");
     }
 
-
     // ======Check Email - Reset Pass : Login Page======
 
     @PostMapping("/resetpass")
     public ResponseEntity<?> resetPasswordLogin(@RequestBody UserDetailDto dto) {
         // try {
-            UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(dto.getEmail());
-            Map<String, Object> userData = new HashMap<>();
-            userData.put("userId", userDetailEntity.getUserId());
-            userData.put("userEmail", userDetailEntity.getEmail());
-            return ResponseEntity.ok().body(userData);
-        // } catch (Exception e) {
-        //     return ResponseEntity.ok().body("Invalid Email");
-        // }
+        UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(dto.getEmail());
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("userId", userDetailEntity.getUserId());
+        userData.put("userEmail", userDetailEntity.getEmail());
+        return ResponseEntity.ok().body(userData);
+    }
+    // } catch (Exception e) {
+    // return ResponseEntity.ok().body("Invalid Email");
+    // }
 
     @GetMapping("/bank")
     public ResponseEntity<?> getBank() {
@@ -416,7 +423,6 @@ public class UserDetailController {
             response.setData("Error");
             return ResponseEntity.ok().body(response);
         }
-
 
     }
 
