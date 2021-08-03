@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import com.zwallet.zwalletapi.Config.JWTUtils;
 import com.zwallet.zwalletapi.Model.Dto.AccountDto;
-import com.zwallet.zwalletapi.Model.Dto.ChangePasswordDto;
 import com.zwallet.zwalletapi.Model.Dto.JWTResponse;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.UserDataFilter;
@@ -230,43 +229,29 @@ public class UserDetailController {
         return ResponseEntity.ok().body("Logout");
     }
 
-    //ON GOING
-    // ======Change Password - Profile======
+    // ======Change Password======
 
     @PutMapping("/change-password/{id}")
-    public ResponseEntity<?> updatePassword(@RequestBody ChangePasswordDto dto, @PathVariable Integer id) {
+    public ResponseEntity<?> updatePassword(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userDetailRepository.save(userEntity);
 
-        // userEntity.setPassword(passwordEncoder.encode(dto.getCurrentPass()));
-        // userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
-        // userEntity.setPassword(passwordEncoder.encode(dto.getConfirmPass()));
+        Map<String, Object> userData = new HashMap<>();
+        UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
+        PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
+        AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
+        userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
+        userData.put("userId", userDetailEntity.getUserId());
+        userData.put("userName", userDetailEntity.getUsername());
+        userData.put("userImage", userDetailEntity.getUserImage());
+        userData.put("userEmail", userDetailEntity.getEmail());
+        userData.put("userPin", userDetailEntity.getPin());
+        userData.put("accountId", accountEntity.getAccountId());
+        userData.put("accountBalance", accountEntity.getBalance());
 
-        if (passwordEncoder.matches(dto.getCurrentPass(), userEntity.getPassword())) {
-            try {
-                userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
-                userDetailRepository.save(userEntity);
-
-                Map<String, Object> userData = new HashMap<>();
-                PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userEntity, true);
-                AccountEntity accountEntity = accountRepository.findByUserId(userEntity);
-                userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-                userData.put("userId", userEntity.getUserId());
-                userData.put("userName", userEntity.getUsername());
-                userData.put("userImage", userEntity.getUserImage());
-                userData.put("userEmail", userEntity.getEmail());
-                userData.put("userPin", userEntity.getPin());
-                userData.put("accountId", accountEntity.getAccountId());
-                userData.put("accountBalance", accountEntity.getBalance());
-        
-                return ResponseEntity.ok().body(userData);         
-            } catch (Exception e) {
-                return ResponseEntity.ok().body("failed");            
-            }  
-        }else{
-            return ResponseEntity.ok().body("error");
-        }          
-
-     }
+        return ResponseEntity.ok().body(userData);
+    }
 
     // ======Create & New PIN======
 
@@ -292,21 +277,28 @@ public class UserDetailController {
         return ResponseEntity.ok().body(userData);
     }
 
-    // ======Reset Password : Login page======
+    // ======Reset Password======
 
     @PutMapping("/reset-password/{id}")
     public ResponseEntity<?> resetPassword(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
         userDetailRepository.save(userEntity);
 
         Map<String, Object> userData = new HashMap<>();
         UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
+        PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
+        AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
+        userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
         userData.put("userId", userDetailEntity.getUserId());
+        userData.put("userName", userDetailEntity.getUsername());
+        userData.put("userImage", userDetailEntity.getUserImage());
         userData.put("userEmail", userDetailEntity.getEmail());
+        userData.put("userPin", userDetailEntity.getPin());
+        userData.put("accountId", accountEntity.getAccountId());
+        userData.put("accountBalance", accountEntity.getBalance());
 
-        return ResponseEntity.ok().body("Password Changed");
+        return ResponseEntity.ok().body(userData);
     }
 
     // ======Personal Information======
@@ -322,14 +314,14 @@ public class UserDetailController {
 
     // ======Bank Number======
 
-    // @PutMapping("/banknumber/{id}")
-    // public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-    //     UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-    //     userEntity.setBankNumber(dto.getBankNumber());
-    //     userDetailRepository.save(userEntity);
-    //     return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
-    //             + "Your Bank Account Number : " + dto.getBankNumber());
-    // }
+    @PutMapping("/banknumber/{id}")
+    public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setBankNumber(dto.getBankNumber());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
+                + "Your Bank Account Number : " + dto.getBankNumber());
+    }
 
     // @GetMapping("/pin")
     // // Low : Secure
@@ -368,21 +360,6 @@ public class UserDetailController {
         return ResponseEntity.badRequest().body("Id not found");
     }
 
-
-    // ======Check Email - Reset Pass : Login Page======
-
-    @PostMapping("/resetpass")
-    public ResponseEntity<?> resetPasswordLogin(@RequestBody UserDetailDto dto) {
-        // try {
-            UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(dto.getEmail());
-            Map<String, Object> userData = new HashMap<>();
-            userData.put("userId", userDetailEntity.getUserId());
-            userData.put("userEmail", userDetailEntity.getEmail());
-            return ResponseEntity.ok().body(userData);
-        // } catch (Exception e) {
-        //     return ResponseEntity.ok().body("Invalid Email");
-        // }
-
     @GetMapping("/bank")
     public ResponseEntity<?> getBank() {
         StatusMessageDto response = new StatusMessageDto<>();
@@ -416,7 +393,6 @@ public class UserDetailController {
             response.setData("Error");
             return ResponseEntity.ok().body(response);
         }
-
 
     }
 
