@@ -246,24 +246,25 @@ public class UserDetailController {
                 userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
                 userDetailRepository.save(userEntity);
 
-                Map<String, Object> userData = new HashMap<>();
-                PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userEntity, true);
-                AccountEntity accountEntity = accountRepository.findByUserId(userEntity);
-                userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-                userData.put("userId", userEntity.getUserId());
-                userData.put("userName", userEntity.getUsername());
-                userData.put("userImage", userEntity.getUserImage());
-                userData.put("userEmail", userEntity.getEmail());
-                userData.put("userPin", userEntity.getPin());
-                userData.put("accountId", accountEntity.getAccountId());
-                userData.put("accountBalance", accountEntity.getBalance());
+                // Map<String, Object> userData = new HashMap<>();
+                // PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userEntity, true);
+                // AccountEntity accountEntity = accountRepository.findByUserId(userEntity);
+                // userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
+                // userData.put("userId", userEntity.getUserId());
+                // userData.put("userName", userEntity.getUsername());
+                // userData.put("userImage", userEntity.getUserImage());
+                // userData.put("userEmail", userEntity.getEmail());
+                // userData.put("userPin", userEntity.getPin());
+                // userData.put("accountId", accountEntity.getAccountId());
+                // userData.put("accountBalance", accountEntity.getBalance());
         
-                return ResponseEntity.ok().body(userData);         
+                // return ResponseEntity.ok().body(userData);
+                return ResponseEntity.ok().body("Password Changed Successfully");        
             } catch (Exception e) {
-                return ResponseEntity.ok().body("failed");            
+                return ResponseEntity.ok().body("Failed");            
             }  
         }else{
-            return ResponseEntity.ok().body("error");
+            return ResponseEntity.ok().body("Error");
         }          
 
      }
@@ -382,42 +383,41 @@ public class UserDetailController {
         // } catch (Exception e) {
         //     return ResponseEntity.ok().body("Invalid Email");
         // }
-
-    @GetMapping("/bank")
-    public ResponseEntity<?> getBank() {
-        StatusMessageDto response = new StatusMessageDto<>();
-        try {
-            List<UserDetailEntity> listBank = userDetailRepository.findBank();
-            response.setMessage("Success");
-            response.setStatus(HttpStatus.ACCEPTED.toString());
-            response.setData(listBank);
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            response.setMessage("Failed");
-            response.setStatus(HttpStatus.BAD_REQUEST.toString());
-            response.setData("Error");
-            return ResponseEntity.ok().body(response);
-        }
-
     }
 
-    @GetMapping("/bank/{bankName}")
-    public ResponseEntity<?> getBankByName(@PathVariable(value = "bankName") String bankName) {
-        StatusMessageDto response = new StatusMessageDto<>();
-        try {
-            UserDetailEntity listBank = userDetailRepository.findBankByName(bankName);
-            response.setMessage("Success");
-            response.setStatus(HttpStatus.ACCEPTED.toString());
-            response.setData(listBank);
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            response.setMessage("Failed");
-            response.setStatus(HttpStatus.BAD_REQUEST.toString());
-            response.setData("Error");
-            return ResponseEntity.ok().body(response);
-        }
+    // @GetMapping("/bank")
+    // public ResponseEntity<?> getBank() {
+    //     StatusMessageDto response = new StatusMessageDto<>();
+    //     try {
+    //         List<UserDetailEntity> listBank = userDetailRepository.findBank();
+    //         response.setMessage("Success");
+    //         response.setStatus(HttpStatus.ACCEPTED.toString());
+    //         response.setData(listBank);
+    //         return ResponseEntity.ok().body(response);
+    //     } catch (Exception e) {
+    //         response.setMessage("Failed");
+    //         response.setStatus(HttpStatus.BAD_REQUEST.toString());
+    //         response.setData("Error");
+    //         return ResponseEntity.ok().body(response);
+    //     }
 
+    // }
 
-    }
+    // @GetMapping("/bank/{bankName}")
+    // public ResponseEntity<?> getBankByName(@PathVariable(value = "bankName") String bankName) {
+    //     StatusMessageDto response = new StatusMessageDto<>();
+    //     try {
+    //         UserDetailEntity listBank = userDetailRepository.findBankByName(bankName);
+    //         response.setMessage("Success");
+    //         response.setStatus(HttpStatus.ACCEPTED.toString());
+    //         response.setData(listBank);
+    //         return ResponseEntity.ok().body(response);
+    //     } catch (Exception e) {
+    //         response.setMessage("Failed");
+    //         response.setStatus(HttpStatus.BAD_REQUEST.toString());
+    //         response.setData("Error");
+    //         return ResponseEntity.ok().body(response);
+    //     }
+    // }
 
 }
