@@ -46,6 +46,7 @@ public class PhoneNumberController {
 
     Map<String, String> newData = new HashMap<>();
 
+    newData.put("userId", phoneNumber.getUser().getUserId().toString());
     newData.put("phoneNumber", phoneNumber.getPhoneNumber());
     newData.put("username", phoneNumber.getUser().getUsername());
     newData.put("userImage", phoneNumber.getUser().getUserImage());
