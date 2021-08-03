@@ -90,9 +90,7 @@ public class UserDetailController {
         userDetailEntity.setEmail(dto.getEmail());
         userDetailEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
         userDetailEntity.setUserRole(dto.getUserRole());
-
         userDetailRepository.save(userDetailEntity);
-
         return ResponseEntity.ok().body("Success!");
     }
 
@@ -317,6 +315,42 @@ public class UserDetailController {
         }
         return ResponseEntity.ok()
                 .body("Your Bank Account Number Has Been Registered Successfully! " + "Your Bank Account Number : ");
+    }
+
+    @GetMapping("/bank")
+    public ResponseEntity<?> getBank() {
+        StatusMessageDto response = new StatusMessageDto<>();
+        try {
+            List<UserDetailEntity> listBank = userDetailRepository.findBank();
+            response.setMessage("Success");
+            response.setStatus(HttpStatus.ACCEPTED.toString());
+            response.setData(listBank);
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            response.setMessage("Failed");
+            response.setStatus(HttpStatus.BAD_REQUEST.toString());
+            response.setData("Error");
+            return ResponseEntity.ok().body(response);
+        }
+
+    }
+
+    @GetMapping("/bank/{bankName}")
+    public ResponseEntity<?> getBankByName(@PathVariable(value = "bankName") String bankName) {
+        StatusMessageDto response = new StatusMessageDto<>();
+        try {
+            UserDetailEntity listBank = userDetailRepository.findBankByName(bankName);
+            response.setMessage("Success");
+            response.setStatus(HttpStatus.ACCEPTED.toString());
+            response.setData(listBank);
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            response.setMessage("Failed");
+            response.setStatus(HttpStatus.BAD_REQUEST.toString());
+            response.setData("Error");
+            return ResponseEntity.ok().body(response);
+        }
+
     }
 
 }
