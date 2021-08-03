@@ -48,8 +48,8 @@ public class UserDetailEntity {
     // @JoinColumn(name = "phone_number_id", nullable = true)
     // private PhoneNumberEntity phoneNumber;
 
-    @Column(length = 50, nullable = true)
-    private String bankNumber;
+    // @Column(length = 50, nullable = true)
+    // private String bankNumber;
 
     @Column(length = 10, nullable = false)
     private String userRole;
