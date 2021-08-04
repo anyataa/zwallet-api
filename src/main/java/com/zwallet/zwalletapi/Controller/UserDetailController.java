@@ -75,7 +75,6 @@ public class UserDetailController {
 
     // ======Add Vendor(Merchant & Bank)======
 
-
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody UserDetailDto dto) {
         UserDetailEntity userDetailEntity = new UserDetailEntity();
@@ -388,8 +387,6 @@ public class UserDetailController {
         //     return ResponseEntity.ok().body("Invalid Email");
         // }
     }
-
-    //=====BANK=====
 
     @GetMapping("/bank")
     public ResponseEntity<?> getBank() {
