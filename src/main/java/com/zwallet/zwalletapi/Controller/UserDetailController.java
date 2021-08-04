@@ -246,20 +246,20 @@ public class UserDetailController {
                 userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
                 userDetailRepository.save(userEntity);
 
-                // Map<String, Object> userData = new HashMap<>();
-                // PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userEntity, true);
-                // AccountEntity accountEntity = accountRepository.findByUserId(userEntity);
-                // userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-                // userData.put("userId", userEntity.getUserId());
-                // userData.put("userName", userEntity.getUsername());
-                // userData.put("userImage", userEntity.getUserImage());
-                // userData.put("userEmail", userEntity.getEmail());
-                // userData.put("userPin", userEntity.getPin());
-                // userData.put("accountId", accountEntity.getAccountId());
-                // userData.put("accountBalance", accountEntity.getBalance());
+                Map<String, Object> userData = new HashMap<>();
+                PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userEntity, true);
+                AccountEntity accountEntity = accountRepository.findByUserId(userEntity);
+                userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
+                userData.put("userId", userEntity.getUserId());
+                userData.put("userName", userEntity.getUsername());
+                userData.put("userImage", userEntity.getUserImage());
+                userData.put("userEmail", userEntity.getEmail());
+                userData.put("userPin", userEntity.getPin());
+                userData.put("accountId", accountEntity.getAccountId());
+                userData.put("accountBalance", accountEntity.getBalance());
         
-                // return ResponseEntity.ok().body(userData);
-                return ResponseEntity.ok().body("Password Changed Successfully");        
+                return ResponseEntity.ok().body(userData);
+                // return ResponseEntity.ok().body("Password Changed Successfully");        
             } catch (Exception e) {
                 return ResponseEntity.ok().body("Failed");            
             }  
