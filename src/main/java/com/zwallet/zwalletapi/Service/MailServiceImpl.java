@@ -11,17 +11,17 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class MailServiceImpl implements MailService {
-  private final JavaMailSender javaMailSender;
+  // private final JavaMailSender javaMailSender;
 
   @Override
   public void sendMail(MailDto mailDto) {
-    SimpleMailMessage message = new SimpleMailMessage();
+    //  pleMailMessage message = new SimpleMailMessage();
 
-    message.setTo(mailDto.getRecipient());
-    message.setSubject(mailDto.getSubject());
-    message.setText(mailDto.getMessage());
+    //  sage.setTo(mailDto.getRecipient());
+    //  sage.setSubject(mailDto.getSubject());
+    //  sage.setText(mailDto.getMessage());
 
-    javaMailSender.send(message);
+    //  aMailSender.send(message);
   }
 
 }
