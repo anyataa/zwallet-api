@@ -213,6 +213,14 @@ public class UserDetailController {
         return ResponseEntity.ok().body(userEntity);
     }
 
+    @DeleteMapping("/delete/forever/{id}")
+    public ResponseEntity<?> deleteUserForever(@PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setDeleted(true);
+        userDetailRepository.delete(userEntity);
+        return ResponseEntity.ok().body(userEntity);
+    }
+
     // ======Update User Status When Sign In======
 
     @PutMapping("/signin-status/{id}")

@@ -73,4 +73,13 @@ public class AccountImp implements AccountService {
         return foundAccount;
     }
 
+    @Override
+    public ResponseEntity<?> putAccountBalance(Integer accountId, Double balance) throws ResourceNotFoundException {
+        AccountEntity foundAccount = repo.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found id"));
+        foundAccount.setBalance(balance);
+        repo.save(foundAccount);
+        return ResponseEntity.ok().body(foundAccount.getBalance() + "updated!");
+    }
+
 }

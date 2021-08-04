@@ -16,15 +16,21 @@ public class IncomeOutcomeDto {
     private List<TransactionItemDto> listOutcome;
     private List<TransactionItemDto> listTransaction;
     private List<?> listBalance;
+    private List<TransactionItemDto> list2Day;
+    private List<TransactionItemDto> list2Week;
 
     public IncomeOutcomeDto(Double sumIncome, Double sumOutcome, List<TransactionItemDto> listIncome,
-            List<TransactionItemDto> listOutcome, List<TransactionItemDto> listTransaction, List<?> listBalance) {
+            List<TransactionItemDto> listOutcome, List<TransactionItemDto> listTransaction, List<?> listBalance,
+            List<TransactionItemDto> list2Day, List<TransactionItemDto> list2Week) {
         this.sumIncome = sumIncome;
         this.sumOutcome = sumOutcome;
         this.listIncome = listIncome;
         this.listOutcome = listOutcome;
         this.listTransaction = listTransaction;
         this.listBalance = listBalance;
+        this.list2Day = list2Day;
+        this.list2Week = list2Week;
+
     }
 
 }

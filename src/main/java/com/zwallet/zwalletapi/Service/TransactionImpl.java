@@ -88,8 +88,29 @@ public class TransactionImpl implements TransactionService {
 
         // Balance History
         List<?> foundBalance = repo.findTransactionBalanceHistory(foundAccount);
+
+        // 2 transaction each Today and Week
+        List<TransactionEntity> today2 = repo.findToday2Transaction(foundAccount);
+        List<TransactionItemDto> foundToday2 = new ArrayList<>();
+        for (TransactionEntity item : today2) {
+            TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
+                    item.getTransactionNotes());
+            foundToday2.add(filter);
+        }
+        List<TransactionEntity> week2 = repo.findWeek2Transaction(foundAccount);
+        List<TransactionItemDto> foundWeek2 = new ArrayList<>();
+        for (TransactionEntity item : week2) {
+            TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
+                    item.getTransactionNotes());
+            foundWeek2.add(filter);
+        }
+
         IncomeOutcomeDto data = new IncomeOutcomeDto(sumIncome, sumOutcome, foundFilterIncome, foundFilterOutcome,
-                foundFilterAll, foundBalance);
+                foundFilterAll, foundBalance, foundToday2, foundWeek2);
         return data;
     }
 
@@ -179,7 +200,11 @@ public class TransactionImpl implements TransactionService {
         newTransaction.setTransactionDetail(transactionDetail);
         newTransaction.setFromAccountId(sender);
         newTransaction.setToAccountId(receiver);
-
+        newTransaction.setToAccountBalance(receiver.getBalance() + dto.getTransactionAmount());
+        newTransaction.setFromAccountBalance(sender.getBalance() - dto.getTransactionAmount());
+        if (sender.getBalance() <= dto.getTransactionAmount()) {
+            return ResponseEntity.ok().body("Amount Exceeds Balance");
+        }
         // Set up Balance
         receiver.setBalance(receiver.getBalance() + dto.getTransactionAmount());
         sender.setBalance((sender.getBalance() - dto.getTransactionAmount()));
