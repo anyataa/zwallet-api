@@ -42,16 +42,22 @@ public class PhoneNumberController {
 
   @GetMapping("/number/{number}")
   public ResponseEntity<?> getPhoneByPhoneNumber(@PathVariable String number){
-    PhoneNumberEntity phoneNumber = phoneRepository.findByPhoneNumberAndIsPrimary(number, true);
+    try {
+      
+      PhoneNumberEntity phoneNumber = phoneRepository.findByPhoneNumberAndIsPrimary(number, true);
 
-    Map<String, String> newData = new HashMap<>();
+      Map<String, String> newData = new HashMap<>();
+  
+      newData.put("userId", phoneNumber.getUser().getUserId().toString());
+      newData.put("phoneNumber", phoneNumber.getPhoneNumber());
+      newData.put("username", phoneNumber.getUser().getUsername());
+      newData.put("userImage", phoneNumber.getUser().getUserImage());
+      
+      return ResponseEntity.ok().body(newData);
+    } catch (Exception e) {
+      return ResponseEntity.ok().body("Phone Number Not Found");
+    }
 
-    newData.put("userId", phoneNumber.getUser().getUserId().toString());
-    newData.put("phoneNumber", phoneNumber.getPhoneNumber());
-    newData.put("username", phoneNumber.getUser().getUsername());
-    newData.put("userImage", phoneNumber.getUser().getUserImage());
-
-    return ResponseEntity.ok().body(newData);
   }
 
   @GetMapping("/get-primary/{id}")
