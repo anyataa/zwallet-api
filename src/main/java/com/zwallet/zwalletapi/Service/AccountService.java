@@ -27,6 +27,8 @@ public interface AccountService {
     // put
     ResponseEntity<?> putAccount(Integer accountId, Integer userId, Double balance);
 
+    ResponseEntity<?> putAccountBalance(Integer accountId, Double balance) throws ResourceNotFoundException;
+
     AccountEntity getAccountByUserName(String username) throws ResourceNotFoundException;
 
 }

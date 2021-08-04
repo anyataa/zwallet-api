@@ -65,6 +65,13 @@ public class AccountController {
 
     }
 
+    @PutMapping(value = "/balance")
+    public ResponseEntity<?> putAccountBalance(@RequestParam(name = "accountId") Integer accountId,
+            @RequestParam(name = "balance") Double balance) throws ResourceNotFoundException {
+        return accountService.putAccountBalance(accountId, balance);
+
+    }
+
     @GetMapping("/bca")
     public AccountEntity getAccountByUserName() throws ResourceNotFoundException {
         AccountEntity foundAccount = accountRepo.findByUsername("BCA")
