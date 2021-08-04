@@ -244,55 +244,55 @@ public class UserDetailController {
     // ======Change Password======
 
 
-    @PutMapping("/change-password/{id}")
-    public ResponseEntity<?> updatePassword(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-        userDetailRepository.save(userEntity);
+    // @PutMapping("/change-password/{id}")
+    // public ResponseEntity<?> updatePassword(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+    //     UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+    //     userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+    //     userDetailRepository.save(userEntity);
 
-        Map<String, Object> userData = new HashMap<>();
-        UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
-        PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
-        AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
-        userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-        userData.put("userId", userDetailEntity.getUserId());
-        userData.put("userName", userDetailEntity.getUsername());
-        userData.put("userImage", userDetailEntity.getUserImage());
-        userData.put("userEmail", userDetailEntity.getEmail());
-        userData.put("userPin", userDetailEntity.getPin());
-        userData.put("accountId", accountEntity.getAccountId());
-        userData.put("accountBalance", accountEntity.getBalance());
+    //     Map<String, Object> userData = new HashMap<>();
+    //     UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
+    //     PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
+    //     AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
+    //     userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
+    //     userData.put("userId", userDetailEntity.getUserId());
+    //     userData.put("userName", userDetailEntity.getUsername());
+    //     userData.put("userImage", userDetailEntity.getUserImage());
+    //     userData.put("userEmail", userDetailEntity.getEmail());
+    //     userData.put("userPin", userDetailEntity.getPin());
+    //     userData.put("accountId", accountEntity.getAccountId());
+    //     userData.put("accountBalance", accountEntity.getBalance());
 
-        // userEntity.setPassword(passwordEncoder.encode(dto.getCurrentPass()));
-        // userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
-        // userEntity.setPassword(passwordEncoder.encode(dto.getConfirmPass()));
+    //     // userEntity.setPassword(passwordEncoder.encode(dto.getCurrentPass()));
+    //     // userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
+    //     // userEntity.setPassword(passwordEncoder.encode(dto.getConfirmPass()));
 
-        if (passwordEncoder.matches(dto.getCurrentPass(), userEntity.getPassword())) {
-            try {
-                userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
-                userDetailRepository.save(userEntity);
+    //     if (passwordEncoder.matches(dto.getCurrentPass(), userEntity.getPassword())) {
+    //         try {
+    //             userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
+    //             userDetailRepository.save(userEntity);
 
-                Map<String, Object> userData = new HashMap<>();
-                PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userEntity, true);
-                AccountEntity accountEntity = accountRepository.findByUserId(userEntity);
-                userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-                userData.put("userId", userEntity.getUserId());
-                userData.put("userName", userEntity.getUsername());
-                userData.put("userImage", userEntity.getUserImage());
-                userData.put("userEmail", userEntity.getEmail());
-                userData.put("userPin", userEntity.getPin());
-                userData.put("accountId", accountEntity.getAccountId());
-                userData.put("accountBalance", accountEntity.getBalance());
+    //             Map<String, Object> userData = new HashMap<>();
+    //             PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userEntity, true);
+    //             AccountEntity accountEntity = accountRepository.findByUserId(userEntity);
+    //             userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
+    //             userData.put("userId", userEntity.getUserId());
+    //             userData.put("userName", userEntity.getUsername());
+    //             userData.put("userImage", userEntity.getUserImage());
+    //             userData.put("userEmail", userEntity.getEmail());
+    //             userData.put("userPin", userEntity.getPin());
+    //             userData.put("accountId", accountEntity.getAccountId());
+    //             userData.put("accountBalance", accountEntity.getBalance());
 
-                return ResponseEntity.ok().body(userData);
-            } catch (Exception e) {
-                return ResponseEntity.ok().body("failed");
-            }
-        } else {
-            return ResponseEntity.ok().body("error");
-        }
+    //             return ResponseEntity.ok().body(userData);
+    //         } catch (Exception e) {
+    //             return ResponseEntity.ok().body("failed");
+    //         }
+    //     } else {
+    //         return ResponseEntity.ok().body("error");
+    //     }
 
-    }
+    // }
 
     // ======Create & New PIN======
 
@@ -374,7 +374,7 @@ public class UserDetailController {
         userDetailRepository.save(userEntity);
         return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
                 + "Your Bank Account Number : " + dto.getBankNumber());
-
+    }
     // @GetMapping("/pin")
     // // Low : Secure
     // // buat 1 dtoChangePin , yang ngirim 2 (pinSekarang, id)
