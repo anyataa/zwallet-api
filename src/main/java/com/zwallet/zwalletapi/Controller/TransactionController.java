@@ -64,4 +64,9 @@ public class TransactionController {
         return service.getTransactionPeriodically(accountId);
     }
 
+    @GetMapping("/graph/{accountId}")
+    public ResponseEntity<?> getForGraph(@PathVariable("accountId") Integer accountId)
+            throws ResourceNotFoundException {
+        return service.findTransactionPerDay(accountId);
+    }
 }

@@ -22,19 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/phone")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class PhoneNumberController {
   @Autowired
   private PhoneNumberRepository phoneRepository;
-  
+
   @Autowired
   private UserDetailRepository userDetailRepository;
-  
+
   @GetMapping("/{id}")
   public ResponseEntity<?> getPhones(@PathVariable Integer id) {
     UserDetailEntity userDetail = userDetailRepository.findById(id).get();
     List<PhoneNumberEntity> phones = phoneRepository.findByUser(userDetail);
-    
+
     return ResponseEntity.ok().body(phones);
   }
 
@@ -43,12 +43,12 @@ public class PhoneNumberController {
     UserDetailEntity userDetail = userDetailRepository.findById(id).get();
 
     PhoneNumberEntity phoneNumber = phoneRepository.findByUserAndIsPrimary(userDetail, true);
-    
+
     return ResponseEntity.ok().body(phoneNumber);
   }
 
   @PostMapping("/add")
-  public ResponseEntity<?> addPhone(@RequestBody PhoneNumberDto dto){
+  public ResponseEntity<?> addPhone(@RequestBody PhoneNumberDto dto) {
     PhoneNumberEntity phone = new PhoneNumberEntity(dto.getPhoneNumber());
 
     UserDetailEntity user = userDetailRepository.findById(dto.getUserId()).get();
@@ -60,28 +60,26 @@ public class PhoneNumberController {
   }
 
   @PutMapping("/set-primary")
-  public ResponseEntity<?> updatePhone(@RequestBody PhoneNumberDto dto){
+  public ResponseEntity<?> updatePhone(@RequestBody PhoneNumberDto dto) {
     try {
       UserDetailEntity userDetail = userDetailRepository.findById(dto.getUserId()).get();
       List<PhoneNumberEntity> phones = phoneRepository.findByUser(userDetail);
 
-      for(PhoneNumberEntity e : phones){
+      for (PhoneNumberEntity e : phones) {
         e.setPrimary(false);
         phoneRepository.save(e);
       }
 
       PhoneNumberEntity phone = phoneRepository.findById(Integer.parseInt(dto.getPhoneNumberId())).get();
-  
+
       phone.setPrimary(true);
-  
+
       phoneRepository.save(phone);
-      
+
       return ResponseEntity.ok().body("Set to primary success");
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(HttpStatus.BAD_REQUEST.value());
     }
   }
-
-
 
 }
