@@ -30,4 +30,6 @@ public interface TransactionService {
     TransactionPeriodFilterDto getTransactionPeriodically(Integer accountId) throws ResourceNotFoundException;
 
     ResponseEntity<?> findTransactionBalanceHistory(Integer accountId) throws ResourceNotFoundException;
+
+    ResponseEntity<?> findTransactionPerDay(Integer accountId) throws ResourceNotFoundException;
 }

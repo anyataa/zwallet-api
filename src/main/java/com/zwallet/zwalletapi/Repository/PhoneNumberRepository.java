@@ -14,4 +14,6 @@ public interface PhoneNumberRepository extends JpaRepository<PhoneNumberEntity, 
   List<PhoneNumberEntity> findByUser(UserDetailEntity userDetail);
 
   PhoneNumberEntity findByUserAndIsPrimary(UserDetailEntity userDetail, boolean primary);
+
+  PhoneNumberEntity findByPhoneNumberAndIsPrimary(String phoneNumber, boolean primary);
 }

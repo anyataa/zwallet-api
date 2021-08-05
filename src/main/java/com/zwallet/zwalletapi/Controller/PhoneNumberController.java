@@ -1,6 +1,8 @@
 package com.zwallet.zwalletapi.Controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.zwallet.zwalletapi.Model.Dto.PhoneNumberDto;
 import com.zwallet.zwalletapi.Model.Entity.PhoneNumberEntity;
@@ -22,20 +24,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/phone")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class PhoneNumberController {
   @Autowired
   private PhoneNumberRepository phoneRepository;
-  
+
   @Autowired
   private UserDetailRepository userDetailRepository;
-  
+
   @GetMapping("/{id}")
   public ResponseEntity<?> getPhones(@PathVariable Integer id) {
     UserDetailEntity userDetail = userDetailRepository.findById(id).get();
     List<PhoneNumberEntity> phones = phoneRepository.findByUser(userDetail);
-    
+
     return ResponseEntity.ok().body(phones);
+  }
+
+  @GetMapping("/number/{number}")
+  public ResponseEntity<?> getPhoneByPhoneNumber(@PathVariable String number) {
+    try {
+
+      PhoneNumberEntity phoneNumber = phoneRepository.findByPhoneNumberAndIsPrimary(number, true);
+
+      Map<String, String> newData = new HashMap<>();
+
+      newData.put("userId", phoneNumber.getUser().getUserId().toString());
+      newData.put("phoneNumber", phoneNumber.getPhoneNumber());
+      newData.put("username", phoneNumber.getUser().getUsername());
+      newData.put("userImage", phoneNumber.getUser().getUserImage());
+
+      return ResponseEntity.ok().body(newData);
+    } catch (Exception e) {
+      return ResponseEntity.ok().body("Phone Number Not Found");
+    }
+
   }
 
   @GetMapping("/get-primary/{id}")
@@ -43,12 +65,12 @@ public class PhoneNumberController {
     UserDetailEntity userDetail = userDetailRepository.findById(id).get();
 
     PhoneNumberEntity phoneNumber = phoneRepository.findByUserAndIsPrimary(userDetail, true);
-    
+
     return ResponseEntity.ok().body(phoneNumber);
   }
 
   @PostMapping("/add")
-  public ResponseEntity<?> addPhone(@RequestBody PhoneNumberDto dto){
+  public ResponseEntity<?> addPhone(@RequestBody PhoneNumberDto dto) {
     PhoneNumberEntity phone = new PhoneNumberEntity(dto.getPhoneNumber());
 
     UserDetailEntity user = userDetailRepository.findById(dto.getUserId()).get();
@@ -60,28 +82,26 @@ public class PhoneNumberController {
   }
 
   @PutMapping("/set-primary")
-  public ResponseEntity<?> updatePhone(@RequestBody PhoneNumberDto dto){
+  public ResponseEntity<?> updatePhone(@RequestBody PhoneNumberDto dto) {
     try {
       UserDetailEntity userDetail = userDetailRepository.findById(dto.getUserId()).get();
       List<PhoneNumberEntity> phones = phoneRepository.findByUser(userDetail);
 
-      for(PhoneNumberEntity e : phones){
+      for (PhoneNumberEntity e : phones) {
         e.setPrimary(false);
         phoneRepository.save(e);
       }
 
       PhoneNumberEntity phone = phoneRepository.findById(Integer.parseInt(dto.getPhoneNumberId())).get();
-  
+
       phone.setPrimary(true);
-  
+
       phoneRepository.save(phone);
-      
+
       return ResponseEntity.ok().body("Set to primary success");
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(HttpStatus.BAD_REQUEST.value());
     }
   }
-
-
 
 }
