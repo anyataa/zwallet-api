@@ -1,6 +1,8 @@
 package com.zwallet.zwalletapi.Controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.zwallet.zwalletapi.Model.Dto.PhoneNumberDto;
 import com.zwallet.zwalletapi.Model.Entity.PhoneNumberEntity;
@@ -36,6 +38,26 @@ public class PhoneNumberController {
     List<PhoneNumberEntity> phones = phoneRepository.findByUser(userDetail);
 
     return ResponseEntity.ok().body(phones);
+  }
+
+  @GetMapping("/number/{number}")
+  public ResponseEntity<?> getPhoneByPhoneNumber(@PathVariable String number) {
+    try {
+
+      PhoneNumberEntity phoneNumber = phoneRepository.findByPhoneNumberAndIsPrimary(number, true);
+
+      Map<String, String> newData = new HashMap<>();
+
+      newData.put("userId", phoneNumber.getUser().getUserId().toString());
+      newData.put("phoneNumber", phoneNumber.getPhoneNumber());
+      newData.put("username", phoneNumber.getUser().getUsername());
+      newData.put("userImage", phoneNumber.getUser().getUserImage());
+
+      return ResponseEntity.ok().body(newData);
+    } catch (Exception e) {
+      return ResponseEntity.ok().body("Phone Number Not Found");
+    }
+
   }
 
   @GetMapping("/get-primary/{id}")

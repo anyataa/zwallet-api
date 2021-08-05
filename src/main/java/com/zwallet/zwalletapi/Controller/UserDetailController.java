@@ -236,6 +236,7 @@ public class UserDetailController {
     //ON GOING
     // ======Change Password - Profile======
 
+
     @PutMapping("/change-password/{id}")
     public ResponseEntity<?> updatePassword(@RequestBody ChangePasswordDto dto, @PathVariable Integer id) {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
@@ -334,6 +335,7 @@ public class UserDetailController {
     //     return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
     //             + "Your Bank Account Number : " + dto.getBankNumber());
     // }
+
 
     // @GetMapping("/pin")
     // // Low : Secure
