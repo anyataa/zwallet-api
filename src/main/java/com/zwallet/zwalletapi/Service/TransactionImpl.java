@@ -20,8 +20,10 @@ import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodFilterDto;
 import com.zwallet.zwalletapi.Model.Dto.VendorDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
+import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.AccountRepository;
 import com.zwallet.zwalletapi.Repository.TransactionRepository;
+import com.zwallet.zwalletapi.Repository.UserDetailRepository;
 import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class TransactionImpl implements TransactionService {
 
     @Autowired
     private AccountRepository accountRepo;
+
+    @Autowired
+    private UserDetailRepository userRepo;
 
     @Override
     public IncomeOutcomeDto getAllTransaction(Integer accountId) throws ResourceNotFoundException {
@@ -110,8 +115,18 @@ public class TransactionImpl implements TransactionService {
             foundWeek2.add(filter);
         }
 
+        List<TransactionEntity> month2 = repo.findMonth2Transaction(foundAccount);
+        List<TransactionItemDto> foundMonth2 = new ArrayList<>();
+        for (TransactionEntity item : month2) {
+            TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
+                    item.getTransactionNotes());
+            foundMonth2.add(filter);
+        }
+
         IncomeOutcomeDto data = new IncomeOutcomeDto(sumIncome, sumOutcome, foundFilterIncome, foundFilterOutcome,
-                foundFilterAll, foundBalance, foundToday2, foundWeek2);
+                foundFilterAll, foundBalance, foundToday2, foundWeek2, foundMonth2);
         return data;
     }
 
@@ -127,6 +142,8 @@ public class TransactionImpl implements TransactionService {
         // not exist"));
         // --------- Will Change set as the active user who sends the money -----------
         AccountEntity sender = accountRepo.findById(dto.getFromAccountId())
+                .orElseThrow(() -> new ResourceNotFoundException("Sender with this id is not exist"));
+        UserDetailEntity senderData = userRepo.findById(sender.getUserId().getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sender with this id is not exist"));
         // ------------------ Will Change end ---------------
         TransactionEntity newTransaction = new TransactionEntity();
@@ -144,22 +161,30 @@ public class TransactionImpl implements TransactionService {
             return ResponseEntity.ok().body("Amount Exceeds Balance");
         }
 
-        // Set up Balance
-        receiver.setBalance(receiver.getBalance() + dto.getTransactionAmount());
-        sender.setBalance((sender.getBalance() - dto.getTransactionAmount()));
-        // Try save
+        if (senderData.getPin().equals(dto.getUserPin())) {
 
-        try {
-            newTransaction.setIsSuccess(0);
-            repo.save(newTransaction);
-            accountRepo.save(sender);
-            accountRepo.save(receiver);
-            response.setData(newTransaction);
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            newTransaction.setIsSuccess(1);
-            return ResponseEntity.ok().body(e.getMessage());
+            receiver.setBalance(receiver.getBalance() + dto.getTransactionAmount());
+
+            sender.setBalance((sender.getBalance() - dto.getTransactionAmount()));
+            // Try save
+            try {
+                newTransaction.setIsSuccess(0);
+                repo.save(newTransaction);
+                accountRepo.save(sender);
+                accountRepo.save(receiver);
+                response.setData(newTransaction);
+                response.setStatus(HttpStatus.OK.toString());
+                response.setMessage("Transfer Success");
+                return ResponseEntity.ok().body(response);
+            } catch (Exception e) {
+                newTransaction.setIsSuccess(1);
+                return ResponseEntity.ok().body(e.getMessage());
+            }
         }
+        // If not fulfilling all the condition
+        response.setMessage("Sorry, It Seems You Put The Wrong Pin  : " + dto.getUserPin());
+        response.setStatus(HttpStatus.OK.toString());
+        return ResponseEntity.ok().body(response);
     }
 
     @Override
@@ -248,12 +273,12 @@ public class TransactionImpl implements TransactionService {
         AccountEntity foundAccount = accountRepo.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot found active user with this account id"));
         graph.setFirst(repo.findPerDay(foundAccount, 0).orElse(0D));
-        graph.setSecond(repo.findPerDay(foundAccount, -1).orElse(0D));
-        graph.setThird(repo.findPerDay(foundAccount, -2).orElse(0D));
-        graph.setForth(repo.findPerDay(foundAccount, -3).orElse(0D));
-        graph.setFifth(repo.findPerDay(foundAccount, -4).orElse(0D));
-        graph.setSixth(repo.findPerDay(foundAccount, -5).orElse(0D));
-        graph.setSeventh(repo.findPerDay(foundAccount, -6).orElse(0D));
+        graph.setSecond(repo.findPerDay(foundAccount, 1).orElse(0D));
+        graph.setThird(repo.findPerDay(foundAccount, 2).orElse(0D));
+        graph.setForth(repo.findPerDay(foundAccount, 3).orElse(0D));
+        graph.setFifth(repo.findPerDay(foundAccount, 4).orElse(0D));
+        graph.setSixth(repo.findPerDay(foundAccount, 5).orElse(0D));
+        graph.setSeventh(repo.findPerDay(foundAccount, 6).orElse(0D));
         try {
             response.setMessage("Success");
             response.setStatus(HttpStatus.OK.toString());

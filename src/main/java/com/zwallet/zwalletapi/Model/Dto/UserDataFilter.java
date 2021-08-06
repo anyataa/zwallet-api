@@ -14,7 +14,7 @@ public class UserDataFilter {
     private String userPin;
     private Integer accountId;
     private Double accountBalance;
-
+    
     public UserDataFilter(String phoneNumber, Integer userId, String userName, String userImage, String userEmail,
             String userPin, Integer accountId, Double accountBalance) {
         this.phoneNumber = phoneNumber;
@@ -25,7 +25,6 @@ public class UserDataFilter {
         this.userPin = userPin;
         this.accountId = accountId;
         this.accountBalance = accountBalance;
-
     }
 
     // userData.put("phonenumber", phoneNumberEntity.getPhoneNumber());

@@ -44,4 +44,6 @@ public class TransactionDto {
 
     private Double toAccountBalance;
 
+    private String userPin;
+
 }

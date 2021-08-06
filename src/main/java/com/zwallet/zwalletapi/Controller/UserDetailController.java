@@ -327,14 +327,14 @@ public class UserDetailController {
 
     // ======Bank Number======
 
-    // @PutMapping("/banknumber/{id}")
-    // public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-    //     UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-    //     userEntity.setBankNumber(dto.getBankNumber());
-    //     userDetailRepository.save(userEntity);
-    //     return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
-    //             + "Your Bank Account Number : " + dto.getBankNumber());
-    // }
+    @PutMapping("/banknumber/{id}")
+    public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setBankNumber(dto.getBankNumber());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
+                + "Your Bank Account Number : " + dto.getBankNumber());
+    }
 
 
     // @GetMapping("/pin")
@@ -424,6 +424,40 @@ public class UserDetailController {
             return ResponseEntity.ok().body(response);
         }
 
+    }
+
+    //=====Edit User - Personnal Info=====
+
+    @PutMapping("/updateuser/{id}")
+    public ResponseEntity<?> updatePersonalInformation(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setUsername(dto.getUsername());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Profile Has Been Changed Successfully!");
+    }
+
+    @PutMapping("/updatefname/{id}")
+    public ResponseEntity<?> updateFirstName(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setUsername(dto.getUserFname());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your First Name Has Changed Saved Successfully!");
+    }
+
+    @PutMapping("/updatelname/{id}")
+    public ResponseEntity<?> updateLastName(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setUsername(dto.getUserLname());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Last Name Has Been Changed Successfully!");
+    }
+
+    @PutMapping("/update-email/{id}")
+    public ResponseEntity<?> updateEmail(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setEmail(dto.getEmail());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Email Has Been Changed Successfully!");
     }
 
 }
