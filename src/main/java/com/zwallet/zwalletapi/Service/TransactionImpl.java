@@ -13,6 +13,7 @@ import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionBalanceHistoryDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionGraphDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionItemDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodFilterDto;
@@ -231,6 +232,32 @@ public class TransactionImpl implements TransactionService {
             response.setMessage("Success");
             response.setStatus(HttpStatus.OK.toString());
             response.setData(repo.findTransactionBalanceHistory(foundAccount));
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            response.setMessage("Failed");
+            response.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
+            return ResponseEntity.ok().body(response);
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<?> findTransactionPerDay(Integer accountId) throws ResourceNotFoundException {
+        StatusMessageDto<TransactionGraphDto> response = new StatusMessageDto<>();
+        TransactionGraphDto graph = new TransactionGraphDto();
+        AccountEntity foundAccount = accountRepo.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot found active user with this account id"));
+        graph.setFirst(repo.findPerDay(foundAccount, 0).orElse(0D));
+        graph.setSecond(repo.findPerDay(foundAccount, -1).orElse(0D));
+        graph.setThird(repo.findPerDay(foundAccount, -2).orElse(0D));
+        graph.setForth(repo.findPerDay(foundAccount, -3).orElse(0D));
+        graph.setFifth(repo.findPerDay(foundAccount, -4).orElse(0D));
+        graph.setSixth(repo.findPerDay(foundAccount, -5).orElse(0D));
+        graph.setSeventh(repo.findPerDay(foundAccount, -6).orElse(0D));
+        try {
+            response.setMessage("Success");
+            response.setStatus(HttpStatus.OK.toString());
+            response.setData(graph);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             response.setMessage("Failed");
