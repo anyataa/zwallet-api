@@ -134,7 +134,7 @@ public class UserDetailController {
             phoneRepository.save(phone);
             // User Filter
             UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(), userCreated.getUserId(),
-                    dto.getUsername(), null, dto.getEmail(), null, foundAccount.getAccountId(),
+                    dto.getUsername(), null, dto.getEmail(), null, null, foundAccount.getAccountId(),
                     newAccount.getBalance());
 
             response.setStatus(HttpStatus.CREATED.toString());
@@ -184,6 +184,7 @@ public class UserDetailController {
             userData.put("userImage", userDetailEntity.getUserImage());
             userData.put("userEmail", userDetailEntity.getEmail());
             userData.put("userPin", userDetailEntity.getPin());
+            userData.put("bankNumber", userDetailEntity.getBankNumber());
             userData.put("accountId", accountEntity.getAccountId());
             userData.put("accountBalance", accountEntity.getBalance());
             // userData.put("account", accountEntity);
@@ -259,6 +260,7 @@ public class UserDetailController {
                 userData.put("userImage", userEntity.getUserImage());
                 userData.put("userEmail", userEntity.getEmail());
                 userData.put("userPin", userEntity.getPin());
+                userData.put("bankNumber", userEntity.getBankNumber());
                 userData.put("accountId", accountEntity.getAccountId());
                 userData.put("accountBalance", accountEntity.getBalance());
         
@@ -291,6 +293,7 @@ public class UserDetailController {
         userData.put("userImage", userDetailEntity.getUserImage());
         userData.put("userEmail", userDetailEntity.getEmail());
         userData.put("userPin", userDetailEntity.getPin());
+        userData.put("bankNumber", userEntity.getBankNumber());
         userData.put("accountId", accountEntity.getAccountId());
         userData.put("accountBalance", accountEntity.getBalance());
 
@@ -327,14 +330,14 @@ public class UserDetailController {
 
     // ======Bank Number======
 
-    // @PutMapping("/banknumber/{id}")
-    // public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-    //     UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-    //     userEntity.setBankNumber(dto.getBankNumber());
-    //     userDetailRepository.save(userEntity);
-    //     return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
-    //             + "Your Bank Account Number : " + dto.getBankNumber());
-    // }
+    @PutMapping("/banknumber/{id}")
+    public ResponseEntity<?> addBankNumber(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+        userEntity.setBankNumber(dto.getBankNumber());
+        userDetailRepository.save(userEntity);
+        return ResponseEntity.ok().body("Your Bank Account Number Has Been Registered Successfully! "
+                + "Your Bank Account Number : " + dto.getBankNumber());
+    }
 
 
     // @GetMapping("/pin")
@@ -431,7 +434,7 @@ public class UserDetailController {
     @PutMapping("/updateuser/{id}")
     public ResponseEntity<?> updatePersonalInformation(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-        userEntity.setUsername(dto.getUserFname() + " " + dto.getUserLname());
+        userEntity.setUsername(dto.getUsername());
         userDetailRepository.save(userEntity);
         return ResponseEntity.ok().body("Your Profile Has Been Changed Successfully!");
     }
