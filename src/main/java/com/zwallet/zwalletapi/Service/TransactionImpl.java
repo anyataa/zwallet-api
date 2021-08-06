@@ -248,12 +248,12 @@ public class TransactionImpl implements TransactionService {
         AccountEntity foundAccount = accountRepo.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot found active user with this account id"));
         graph.setFirst(repo.findPerDay(foundAccount, 0).orElse(0D));
-        graph.setSecond(repo.findPerDay(foundAccount, -1).orElse(0D));
-        graph.setThird(repo.findPerDay(foundAccount, -2).orElse(0D));
-        graph.setForth(repo.findPerDay(foundAccount, -3).orElse(0D));
-        graph.setFifth(repo.findPerDay(foundAccount, -4).orElse(0D));
-        graph.setSixth(repo.findPerDay(foundAccount, -5).orElse(0D));
-        graph.setSeventh(repo.findPerDay(foundAccount, -6).orElse(0D));
+        graph.setSecond(repo.findPerDay(foundAccount, 1).orElse(0D));
+        graph.setThird(repo.findPerDay(foundAccount, 2).orElse(0D));
+        graph.setForth(repo.findPerDay(foundAccount, 3).orElse(0D));
+        graph.setFifth(repo.findPerDay(foundAccount, 4).orElse(0D));
+        graph.setSixth(repo.findPerDay(foundAccount, 5).orElse(0D));
+        graph.setSeventh(repo.findPerDay(foundAccount, 6).orElse(0D));
         try {
             response.setMessage("Success");
             response.setStatus(HttpStatus.OK.toString());
