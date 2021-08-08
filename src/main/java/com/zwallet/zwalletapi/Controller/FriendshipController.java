@@ -41,14 +41,16 @@ public class FriendshipController {
   @GetMapping("/{id}")
   public ResponseEntity<?> getFriends(@PathVariable Integer id) {
     UserDetailEntity userDetail = userDetailRepository.findById(id).get();
-    PhoneNumberEntity phoneNumber = phoneNumberRepository.findByUserAndIsPrimary(userDetail, true);
+    List<FriendshipEntity> friendship = friendshipRepository.findByUser(userDetail);
     List<FriendshipEntity> friends = friendshipRepository.findByUser(userDetail);
 
     List<FriendshipItemDto> friendItems = new ArrayList<>();
 
-    for (FriendshipEntity item : friends) {
-      FriendshipItemDto newFriends = new FriendshipItemDto(item.getFriend().getUserId(), userDetail.getUserId(),
-          item.getFriend().getUsername(), userDetail.getUserImage(), phoneNumber.getPhoneNumber());
+    
+    for(int i = 0; i < friends.size(); i++){
+      PhoneNumberEntity phoneNumber = phoneNumberRepository.findByUserAndIsPrimary(friendship.get(i).getFriend(), true);
+      FriendshipItemDto newFriends = new FriendshipItemDto(friends.get(i).getFriend().getUserId(), userDetail.getUserId(), friends.get(i).getFriend().getUsername(), phoneNumber.getUser().getUserImage(), phoneNumber.getPhoneNumber());
+
       friendItems.add(newFriends);
     }
 
