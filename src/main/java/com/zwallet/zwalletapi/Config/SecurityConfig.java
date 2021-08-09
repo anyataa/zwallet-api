@@ -1,5 +1,8 @@
 package com.zwallet.zwalletapi.Config;
 
+import org.jasypt.util.numeric.BasicIntegerNumberEncryptor;
+import org.jasypt.util.numeric.IntegerNumberEncryptor;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,4 +64,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    // ENCRYPTOR TEXT
+    @Bean
+    public BasicTextEncryptor encryptorText() {
+        BasicTextEncryptor ency = new BasicTextEncryptor();
+        ency.setPassword("password");
+        return ency;
+
+    }
+
+    @Bean
+    public BasicIntegerNumberEncryptor encryptorNumber() {
+        BasicIntegerNumberEncryptor ency = new BasicIntegerNumberEncryptor();
+        ency.setPassword("password");
+        return ency;
+
+    }
+
 }

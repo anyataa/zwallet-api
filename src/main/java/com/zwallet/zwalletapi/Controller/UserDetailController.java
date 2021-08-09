@@ -1,5 +1,6 @@
 package com.zwallet.zwalletapi.Controller;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,9 @@ import com.zwallet.zwalletapi.Service.AccountService;
 import com.zwallet.zwalletapi.Service.UserDetailsImpl;
 import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 
+import org.jasypt.util.numeric.BasicIntegerNumberEncryptor;
+import org.jasypt.util.text.BasicTextEncryptor;
+import org.jasypt.util.text.TextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +70,12 @@ public class UserDetailController {
 
     @Autowired
     private JWTUtils jwtUtils;
+
+    @Autowired
+    private BasicTextEncryptor textEncryptor;
+
+    @Autowired
+    private BasicIntegerNumberEncryptor numEncryptor;
 
     @Autowired
     private PhoneNumberRepository phoneRepository;
@@ -179,6 +189,8 @@ public class UserDetailController {
             // userDetailEntity.getUsername(),
             // userDetailEntity.getUserImage(), phoneNumberEntity.getPhoneNumber());
             userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
+            // userData.put("userId",
+            // numEncryptor.encrypt(BigInteger.valueOf(userDetailEntity.getUserId())));
             userData.put("userId", userDetailEntity.getUserId());
             userData.put("userName", userDetailEntity.getUsername());
             userData.put("userImage", userDetailEntity.getUserImage());
@@ -233,9 +245,8 @@ public class UserDetailController {
         return ResponseEntity.ok().body("Logout");
     }
 
-    //ON GOING
+    // ON GOING
     // ======Change Password - Profile======
-
 
     @PutMapping("/change-password/{id}")
     public ResponseEntity<?> updatePassword(@RequestBody ChangePasswordDto dto, @PathVariable Integer id) {
@@ -261,17 +272,17 @@ public class UserDetailController {
                 userData.put("userPin", userEntity.getPin());
                 userData.put("accountId", accountEntity.getAccountId());
                 userData.put("accountBalance", accountEntity.getBalance());
-        
-                return ResponseEntity.ok().body(userData);
-                // return ResponseEntity.ok().body("Password Changed Successfully");        
-            } catch (Exception e) {
-                return ResponseEntity.ok().body("Failed");            
-            }  
-        }else{
-            return ResponseEntity.ok().body("Error");
-        }          
 
-     }
+                return ResponseEntity.ok().body(userData);
+                // return ResponseEntity.ok().body("Password Changed Successfully");
+            } catch (Exception e) {
+                return ResponseEntity.ok().body("Failed");
+            }
+        } else {
+            return ResponseEntity.ok().body("Error");
+        }
+
+    }
 
     // ======Create & New PIN======
 
@@ -336,19 +347,20 @@ public class UserDetailController {
                 + "Your Bank Account Number : " + dto.getBankNumber());
     }
 
-
     // @GetMapping("/pin")
     // // Low : Secure
     // // buat 1 dtoChangePin , yang ngirim 2 (pinSekarang, id)
-    // public ResponseEntity<?> checkPin(@RequestBody String pinSekarang, Integer id) {
-    //     UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-    //     if (userEntity.getPin() == pinSekarang) {
-    //         return ResponseEntity.ok().body("sama");
-    //     } else {
+    // public ResponseEntity<?> checkPin(@RequestBody String pinSekarang, Integer
+    // id) {
+    // UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+    // if (userEntity.getPin() == pinSekarang) {
+    // return ResponseEntity.ok().body("sama");
+    // } else {
 
-    //     }
-    //     return ResponseEntity.ok()
-    //             .body("Your Bank Account Number Has Been Registered Successfully! " + "Your Bank Account Number : ");
+    // }
+    // return ResponseEntity.ok()
+    // .body("Your Bank Account Number Has Been Registered Successfully! " + "Your
+    // Bank Account Number : ");
     // }
 
     // ======Get User======
@@ -374,19 +386,18 @@ public class UserDetailController {
         return ResponseEntity.badRequest().body("Id not found");
     }
 
-
     // ======Check Email - Reset Pass : Login Page======
 
     @PostMapping("/resetpass")
     public ResponseEntity<?> resetPasswordLogin(@RequestBody UserDetailDto dto) {
         // try {
-            UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(dto.getEmail());
-            Map<String, Object> userData = new HashMap<>();
-            userData.put("userId", userDetailEntity.getUserId());
-            userData.put("userEmail", userDetailEntity.getEmail());
-            return ResponseEntity.ok().body(userData);
+        UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(dto.getEmail());
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("userId", userDetailEntity.getUserId());
+        userData.put("userEmail", userDetailEntity.getEmail());
+        return ResponseEntity.ok().body(userData);
         // } catch (Exception e) {
-        //     return ResponseEntity.ok().body("Invalid Email");
+        // return ResponseEntity.ok().body("Invalid Email");
         // }
     }
 
@@ -426,10 +437,11 @@ public class UserDetailController {
 
     }
 
-    //=====Edit User - Personnal Info=====
+    // =====Edit User - Personnal Info=====
 
     @PutMapping("/updateuser/{id}")
     public ResponseEntity<?> updatePersonalInformation(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+        // Integer idInt = numEncryptor.decrypt(id).intValue();
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setUsername(dto.getUsername());
         userDetailRepository.save(userEntity);

@@ -46,10 +46,11 @@ public class FriendshipController {
 
     List<FriendshipItemDto> friendItems = new ArrayList<>();
 
-    
-    for(int i = 0; i < friends.size(); i++){
+    for (int i = 0; i < friends.size(); i++) {
       PhoneNumberEntity phoneNumber = phoneNumberRepository.findByUserAndIsPrimary(friendship.get(i).getFriend(), true);
-      FriendshipItemDto newFriends = new FriendshipItemDto(friends.get(i).getFriend().getUserId(), userDetail.getUserId(), friends.get(i).getFriend().getUsername(), phoneNumber.getUser().getUserImage(), phoneNumber.getPhoneNumber());
+      FriendshipItemDto newFriends = new FriendshipItemDto(friends.get(i).getFriend().getUserId(),
+          userDetail.getUserId(), friends.get(i).getFriend().getUsername(), phoneNumber.getUser().getUserImage(),
+          phoneNumber.getPhoneNumber());
 
       friendItems.add(newFriends);
     }

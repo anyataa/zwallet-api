@@ -41,7 +41,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     @Query(value = "SELECT * FROM transaction_table WHERE from_account_id = ?1 AND transaction_timestamp BETWEEN curdate()-30 AND curdate() -8 OR to_account_id = ?1 AND transaction_timestamp BETWEEN curdate()-7 AND curdate() -1 ORDER BY transaction_id DESC LIMIT 5", nativeQuery = true)
     List<TransactionEntity> findMonth2Transaction(AccountEntity accountId);
 
-    @Query(value = "SELECT IF(from_account_id = ?1 , from_account_balance , to_account_balance) FROM transaction_table WHERE from_account_id = ?1 AND transaction_timestamp =curdate()- ?2 OR to_account_id = ?1 AND transaction_timestamp = curdate()- ?1 ORDER BY transaction_id DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT IF(from_account_id = ?1 , from_account_balance , to_account_balance) FROM transaction_table WHERE from_account_id = ?1 AND transaction_timestamp =curdate()- ?2 OR to_account_id = ?1 AND transaction_timestamp = curdate()- ?2 ORDER BY transaction_id DESC LIMIT 1", nativeQuery = true)
     Optional<Double> findPerDay(AccountEntity accountId, Integer dayMinus);
 
 }
