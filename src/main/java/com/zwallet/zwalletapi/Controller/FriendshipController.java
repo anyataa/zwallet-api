@@ -90,5 +90,5 @@ public class FriendshipController {
       return ResponseEntity.ok().body(response);
     }
 
-  }
+      }
 }
