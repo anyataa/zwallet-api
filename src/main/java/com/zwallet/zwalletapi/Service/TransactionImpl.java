@@ -18,6 +18,7 @@ import com.zwallet.zwalletapi.Model.Dto.TransactionGraphDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionItemDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodFilterDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionReturnDto;
 import com.zwallet.zwalletapi.Model.Dto.VendorDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
@@ -220,8 +221,11 @@ public class TransactionImpl implements TransactionService {
     @Override
     public ResponseEntity<?> vendorTransfer(Integer transactionType, Integer transactionDetail, TransactionDto dto,
             AccountEntity receiver, AccountEntity sender) throws ResourceNotFoundException {
+        StatusMessageDto response = new StatusMessageDto<>();
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
+        TransactionReturnDto filter = new TransactionReturnDto();
+
         // ------------------ Will Change end ---------------
         TransactionEntity newTransaction = new TransactionEntity();
         newTransaction.setTransactionAmount(dto.getTransactionAmount());
@@ -246,8 +250,17 @@ public class TransactionImpl implements TransactionService {
             repo.save(newTransaction);
             accountRepo.save(sender);
             accountRepo.save(receiver);
-            return ResponseEntity.ok().body(newTransaction);
+            filter.setReceiver(receiver.getUserId().getUsername());
+            filter.setSender(sender.getUserId().getUsername());
+            filter.setAmount(newTransaction.getTransactionAmount());
+            filter.setSenderBalance(newTransaction.getFromAccountBalance());
+            response.setData(filter);
+            response.setMessage("Success");
+            response.setStatus(HttpStatus.OK.toString());
+            return ResponseEntity.ok().body(response);
         } catch (Exception e) {
+            response.setMessage("Something Went Wrong");
+            response.setStatus(HttpStatus.BAD_REQUEST.toString());
             newTransaction.setIsSuccess(1);
             return ResponseEntity.ok().body(e.getMessage());
         }

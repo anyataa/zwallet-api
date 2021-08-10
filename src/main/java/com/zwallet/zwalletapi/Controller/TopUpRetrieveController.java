@@ -3,8 +3,11 @@ package com.zwallet.zwalletapi.Controller;
 import java.net.http.HttpResponse.ResponseInfo;
 
 import com.zwallet.zwalletapi.Config.Encryptor;
+import com.zwallet.zwalletapi.Model.Dto.AccountDataFilter;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionReturnDto;
+import com.zwallet.zwalletapi.Model.Dto.UserDataFilter;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.AccountRepository;
@@ -61,17 +64,21 @@ public class TopUpRetrieveController {
 
     @PostMapping(value = "/retrieve/bank")
     public ResponseEntity<?> retrieveBalanceByBank(@RequestBody TransactionDto dto) throws ResourceNotFoundException {
-        StatusMessageDto<AccountEntity> response = new StatusMessageDto<>();
+        StatusMessageDto response = new StatusMessageDto<>();
         UserDetailEntity bankUser = userRepo.findBankByName(dto.getUsername());
         AccountEntity bank = accountRepo.findByUserId(bankUser);
         Integer openId = enc.decryptString(dto.getToAccountId());
         AccountEntity sender = accountService.getAccountById(openId);
+
+        // filter.setsenBalance(dto.getTransactionAmount());
+        // filter.setSender(sender.getUserId().getUsername());
+        // filter.setReceiver(bank.getUserId().getUsername());
         try {
-            transactionService.vendorTransfer(0, 5, dto, bank, sender);
-            response.setData(sender);
-            response.setMessage("Success");
-            response.setStatus(HttpStatus.ACCEPTED.toString());
-            return ResponseEntity.ok().body(response);
+
+            // response.setData(filter);
+            // response.setMessage("Success");
+            // response.setStatus(HttpStatus.ACCEPTED.toString());
+            return transactionService.vendorTransfer(0, 5, dto, bank, sender);
         } catch (Exception e) {
             response.setData(null);
             response.setMessage("Error");
