@@ -36,7 +36,9 @@ public class TransactionDto {
 
     // Receiver | Type Transaction : 1 Credit
 
-    private Integer toAccountId;
+    private String toAccountId;
+
+    private Integer openToAccountId;
 
     private String username;
 
