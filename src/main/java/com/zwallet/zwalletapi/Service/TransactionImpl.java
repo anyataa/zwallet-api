@@ -139,7 +139,6 @@ public class TransactionImpl implements TransactionService {
         StatusMessageDto<TransactionEntity> response = new StatusMessageDto<>();
         Date date = new Date();
         Integer accountId = enc.decryptString(dto.getFromAccountId());
-
         Timestamp ts = new Timestamp(date.getTime());
         AccountEntity receiver = accountRepo.getAccountUserByUserId(dto.getToUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID" + dto.getToUserId()));

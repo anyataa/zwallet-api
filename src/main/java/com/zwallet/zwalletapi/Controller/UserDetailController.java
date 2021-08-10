@@ -445,9 +445,9 @@ public class UserDetailController {
 
     // =====Edit User - Personnal Info=====
 
-    @PutMapping("/updateuser/{id}")
-    public ResponseEntity<?> updatePersonalInformation(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-        // Integer idInt = numEncryptor.decrypt(id).intValue();
+    @PutMapping("/updateuser/{encId}")
+    public ResponseEntity<?> updatePersonalInformation(@RequestBody UserDetailDto dto, @PathVariable String encId) {
+        Integer id = enc.decryptString(encId);
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setUsername(dto.getUsername());
         userDetailRepository.save(userEntity);
@@ -470,8 +470,9 @@ public class UserDetailController {
         return ResponseEntity.ok().body("Your Last Name Has Been Changed Successfully!");
     }
 
-    @PutMapping("/update-email/{id}")
-    public ResponseEntity<?> updateEmail(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+    @PutMapping("/update-email/{encId}")
+    public ResponseEntity<?> updateEmail(@RequestBody UserDetailDto dto, @PathVariable String encId) {
+        Integer id = enc.decryptString(encId);
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setEmail(dto.getEmail());
         userDetailRepository.save(userEntity);
