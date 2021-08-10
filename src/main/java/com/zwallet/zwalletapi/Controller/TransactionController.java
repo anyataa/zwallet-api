@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionItemDto;
@@ -21,6 +22,7 @@ import org.jasypt.util.numeric.BasicIntegerNumberEncryptor;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -41,10 +43,16 @@ public class TransactionController {
     private TransactionImpl service;
 
     @Autowired
-    private BasicTextEncryptor textEncryptor;
+    private Encryptor enc;
+
+    @Autowired
+    public static BasicTextEncryptor textEncryptor;
 
     @Autowired
     private BasicIntegerNumberEncryptor numEncryptor;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public List<TransactionEntity> getAllTransaction() {
@@ -63,23 +71,27 @@ public class TransactionController {
     }
 
     @GetMapping("/{accountId}")
-    public IncomeOutcomeDto getByReceiverId(@PathVariable("accountId") Integer accountId)
+    public IncomeOutcomeDto getByReceiverId(@PathVariable("accountId") String encAccountId)
             throws ResourceNotFoundException {
+        Integer accountId = enc.decryptString(encAccountId);
         return service.getAllTransaction(accountId);
     }
 
     @GetMapping("/history/{accountId}")
-    public TransactionPeriodFilterDto getByTime(@PathVariable("accountId") Integer accountId)
+    public TransactionPeriodFilterDto getByTime(@PathVariable("accountId") String encAccountId)
             throws ResourceNotFoundException {
+        Integer accountId = enc.decryptString(encAccountId);
         return service.getTransactionPeriodically(accountId);
     }
 
     @GetMapping("/graph/{accountId}")
-    public ResponseEntity<?> getForGraph(@PathVariable("accountId") Integer accountId)
+    public ResponseEntity<?> getForGraph(@PathVariable("accountId") String encAccountId)
             throws ResourceNotFoundException {
+        Integer accountId = enc.decryptString(encAccountId);
         return service.findTransactionPerDay(accountId);
     }
 
+    // Try Encrypt
     @GetMapping("/encrypt")
     public ResponseEntity<?> tryEncrypt() {
         TransactionEntity tra = repo.findById(13).orElse(null);
@@ -90,13 +102,30 @@ public class TransactionController {
         // This is how we convert integer to Big int
         BigInteger bi = BigInteger.valueOf(note.intValue());
         // Cons: It was big int, it takes a lot of memories
-        BigInteger noteEnc = numEncryptor.encrypt(bi);
+        // BigInteger noteEnc = numEncryptor.encrypt(bi);
         // After the decrypt it will be a big int so convert back to Big Int
-        Integer backToInt = Integer.valueOf(bi.intValue());
+        // Integer backToInt = Integer.valueOf(bi.intValue());
         // This is how to assign the decrypted value to an Integer field
         // Why Convert? We want Int but it return Big Int
-        Integer dec = numEncryptor.decrypt(noteEnc).intValue();
-        return ResponseEntity.ok().body(note + "Encryp:" + noteEnc + "Decrypt:" + numEncryptor.decrypt(noteEnc) + dec);
+        // Integer dec = numEncryptor.decrypt(noteEnc).intValue();
+        Integer userId = tra.getToAccountId().getAccountId();
+        String enc = encryptInt(userId);
+
+        return ResponseEntity.ok()
+                .body("enc : " + enc + "dec: " + decryptString(enc) + " try int:" + (decryptString(enc) + 2));
+    }
+
+    public static String encryptInt(Integer id) {
+        String encData = textEncryptor.encrypt(id.toString());
+        String encode = Base64.getEncoder().encodeToString(encData.getBytes());
+        return encode;
+    };
+
+    public static Integer decryptString(String encodedId) {
+        String decodedId = new String(Base64.getDecoder().decode(encodedId));
+        Integer decData = Integer.parseInt(textEncryptor.decrypt(decodedId));
+        return decData;
+
     }
 
 }

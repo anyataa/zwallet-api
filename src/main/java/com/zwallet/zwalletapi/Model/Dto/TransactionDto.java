@@ -30,7 +30,9 @@ public class TransactionDto {
 
     // Sender | Type Transaction : 0 Debit
 
-    private Integer fromAccountId;
+    private String fromAccountId;
+
+    private String openFromAccountId;
 
     // Receiver | Type Transaction : 1 Credit
 

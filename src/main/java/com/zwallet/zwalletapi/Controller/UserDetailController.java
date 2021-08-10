@@ -1,12 +1,14 @@
 package com.zwallet.zwalletapi.Controller;
 
 import java.math.BigInteger;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Config.JWTUtils;
 import com.zwallet.zwalletapi.Model.Dto.AccountDto;
 import com.zwallet.zwalletapi.Model.Dto.ChangePasswordDto;
@@ -72,10 +74,7 @@ public class UserDetailController {
     private JWTUtils jwtUtils;
 
     @Autowired
-    private BasicTextEncryptor textEncryptor;
-
-    @Autowired
-    private BasicIntegerNumberEncryptor numEncryptor;
+    private Encryptor enc;
 
     @Autowired
     private PhoneNumberRepository phoneRepository;
@@ -143,9 +142,9 @@ public class UserDetailController {
             phone.setUser(userCreated);
             phoneRepository.save(phone);
             // User Filter
-            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(), userCreated.getUserId(),
-                    dto.getUsername(), null, dto.getEmail(), null, foundAccount.getAccountId(),
-                    newAccount.getBalance());
+            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(),
+                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null,
+                    enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
 
             response.setStatus(HttpStatus.CREATED.toString());
             response.setMessage("User created!");
@@ -189,14 +188,20 @@ public class UserDetailController {
             // userDetailEntity.getUsername(),
             // userDetailEntity.getUserImage(), phoneNumberEntity.getPhoneNumber());
             userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-            // userData.put("userId",
-            // numEncryptor.encrypt(BigInteger.valueOf(userDetailEntity.getUserId())));
-            userData.put("userId", userDetailEntity.getUserId());
+
+            userData.put("userId", enc.encryptInt(userDetailEntity.getUserId()));
+            // userData.put("userIdClose", (enc.encryptInt(userDetailEntity.getUserId())));
+            // userData.put("userIdOpen",
+            // enc.decryptString(enc.encryptInt(userDetailEntity.getUserId())));
+            // userData.put("userId", encryptInt(userDetailEntity.getUserId()));
+            // userData.put("openUserId",
+            // decryptString(encryptInt(userDetailEntity.getUserId())));
             userData.put("userName", userDetailEntity.getUsername());
             userData.put("userImage", userDetailEntity.getUserImage());
             userData.put("userEmail", userDetailEntity.getEmail());
             userData.put("userPin", userDetailEntity.getPin());
-            userData.put("accountId", accountEntity.getAccountId());
+            // userData.put("accountId", accountEntity.getAccountId());
+            userData.put("accountId", enc.encryptInt(accountEntity.getAccountId()));
             userData.put("accountBalance", accountEntity.getBalance());
             // userData.put("account", accountEntity);
 
@@ -287,13 +292,14 @@ public class UserDetailController {
     // ======Create & New PIN======
 
     @PutMapping("/update-pin/{id}")
-    public ResponseEntity<?> updatePin(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+    public ResponseEntity<?> updatePin(@RequestBody UserDetailDto dto, @PathVariable String id) {
+        Integer openId = enc.decryptString(id);
+        UserDetailEntity userEntity = userDetailRepository.findById(openId).get();
         userEntity.setPin(dto.getPin());
         userDetailRepository.save(userEntity);
 
         Map<String, Object> userData = new HashMap<>();
-        UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
+        UserDetailEntity userDetailEntity = userDetailRepository.findById(openId).get();
         PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
         AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
         userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());

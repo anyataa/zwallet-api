@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionBalanceHistoryDto;
@@ -40,6 +41,9 @@ public class TransactionImpl implements TransactionService {
 
     @Autowired
     private AccountRepository accountRepo;
+
+    @Autowired
+    private Encryptor enc;
 
     @Autowired
     private UserDetailRepository userRepo;
@@ -134,6 +138,8 @@ public class TransactionImpl implements TransactionService {
     public ResponseEntity<?> transactionTransfer(TransactionDto dto) throws ResourceNotFoundException {
         StatusMessageDto<TransactionEntity> response = new StatusMessageDto<>();
         Date date = new Date();
+        Integer accountId = enc.decryptString(dto.getFromAccountId());
+
         Timestamp ts = new Timestamp(date.getTime());
         AccountEntity receiver = accountRepo.getAccountUserByUserId(dto.getToUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID" + dto.getToUserId()));
@@ -141,7 +147,7 @@ public class TransactionImpl implements TransactionService {
         // .orElseThrow(() -> new ResourceNotFoundException("Receiver with this id is
         // not exist"));
         // --------- Will Change set as the active user who sends the money -----------
-        AccountEntity sender = accountRepo.findById(dto.getFromAccountId())
+        AccountEntity sender = accountRepo.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Sender with this id is not exist"));
         UserDetailEntity senderData = userRepo.findById(sender.getUserId().getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sender with this id is not exist"));

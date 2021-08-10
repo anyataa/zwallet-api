@@ -3,6 +3,7 @@ package com.zwallet.zwalletapi.Controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Model.Dto.FriendshipDto;
 import com.zwallet.zwalletapi.Model.Dto.FriendshipItemDto;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
@@ -38,9 +39,13 @@ public class FriendshipController {
   @Autowired
   private PhoneNumberRepository phoneNumberRepository;
 
+  @Autowired
+  private Encryptor enc;
+
   @GetMapping("/{id}")
-  public ResponseEntity<?> getFriends(@PathVariable Integer id) {
-    UserDetailEntity userDetail = userDetailRepository.findById(id).get();
+  public ResponseEntity<?> getFriends(@PathVariable String id) {
+    Integer encId = enc.decryptString(id);
+    UserDetailEntity userDetail = userDetailRepository.findById(encId).get();
     List<FriendshipEntity> friendship = friendshipRepository.findByUser(userDetail);
     List<FriendshipEntity> friends = friendshipRepository.findByUser(userDetail);
 
@@ -62,7 +67,8 @@ public class FriendshipController {
   public ResponseEntity<?> addFriends(@RequestBody FriendshipDto dto) throws ResourceNotFoundException {
     StatusMessageDto response = new StatusMessageDto<>();
     FriendshipEntity friend = new FriendshipEntity();
-    UserDetailEntity user = userDetailRepository.findById(dto.getUserId())
+    Integer openId = enc.decryptString(dto.getUserId());
+    UserDetailEntity user = userDetailRepository.findById(openId)
         .orElseThrow(() -> new ResourceNotFoundException("Sorry, cannot find user with this id"));
     UserDetailEntity newFriend = userDetailRepository.findById(dto.getFriendId())
         .orElseThrow(() -> new ResourceNotFoundException("Sorry, cannot find friend with this id"));
@@ -90,5 +96,5 @@ public class FriendshipController {
       return ResponseEntity.ok().body(response);
     }
 
-      }
+  }
 }
