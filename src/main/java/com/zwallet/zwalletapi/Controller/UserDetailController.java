@@ -183,19 +183,11 @@ public class UserDetailController {
             UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(userDetailsImpl.getUsername());
             PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
             AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
-            // userData.put("user", userDetailEntity);
-            // UserDataFilter dataFilter = new UserDataFilter(userDetailEntity.getUserId(),
-            // userDetailEntity.getUsername(),
-            // userDetailEntity.getUserImage(), phoneNumberEntity.getPhoneNumber());
+
             userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
 
             userData.put("userId", enc.encryptInt(userDetailEntity.getUserId()));
-            // userData.put("userIdClose", (enc.encryptInt(userDetailEntity.getUserId())));
-            // userData.put("userIdOpen",
-            // enc.decryptString(enc.encryptInt(userDetailEntity.getUserId())));
-            // userData.put("userId", encryptInt(userDetailEntity.getUserId()));
-            // userData.put("openUserId",
-            // decryptString(encryptInt(userDetailEntity.getUserId())));
+
             userData.put("userName", userDetailEntity.getUsername());
             userData.put("userImage", userDetailEntity.getUserImage());
             userData.put("userEmail", userDetailEntity.getEmail());
@@ -303,12 +295,12 @@ public class UserDetailController {
         PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
         AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
         userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-        userData.put("userId", userDetailEntity.getUserId());
+        userData.put("userId", enc.encryptInt(userDetailEntity.getUserId()));
         userData.put("userName", userDetailEntity.getUsername());
         userData.put("userImage", userDetailEntity.getUserImage());
         userData.put("userEmail", userDetailEntity.getEmail());
         userData.put("userPin", userDetailEntity.getPin());
-        userData.put("accountId", accountEntity.getAccountId());
+        userData.put("accountId", enc.encryptInt(accountEntity.getAccountId()));
         userData.put("accountBalance", accountEntity.getBalance());
 
         return ResponseEntity.ok().body(userData);
