@@ -143,8 +143,8 @@ public class UserDetailController {
             phoneRepository.save(phone);
             // User Filter
             UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(),
-                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null, dto.getUserRole(),
-                    enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
+                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null,
+                    dto.getUserRole(), enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
 
             response.setStatus(HttpStatus.CREATED.toString());
             response.setMessage("User created!");
@@ -196,8 +196,8 @@ public class UserDetailController {
             phoneRepository.save(phone);
             // User Filter
             UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(),
-                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null, dto.getUserRole(),
-                    enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
+                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null,
+                    dto.getUserRole(), enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
 
             response.setStatus(HttpStatus.CREATED.toString());
             response.setMessage("User created!");
