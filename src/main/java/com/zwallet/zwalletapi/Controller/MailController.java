@@ -1,5 +1,6 @@
 package com.zwallet.zwalletapi.Controller;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Model.Dto.MailDto;
 import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.UserDetailRepository;
@@ -32,21 +33,25 @@ public class MailController {
 
   private JavaMailSender javaMailSender;
 
+  @Autowired
+  private Encryptor enc;
+
   @PostMapping("/send")
   public ResponseEntity<?> sendMail(@RequestBody MailDto mailDto) {
     mailService.sendMail(mailDto);
     return ResponseEntity.ok().body("Email sent successfully!");
   }
-  
+
   @PostMapping("/sendresetpass/{id}")
-  public ResponseEntity<?> mailResetPass(@RequestBody MailDto mailDto, @PathVariable Integer id) {
+  public ResponseEntity<?> mailResetPass(@RequestBody MailDto mailDto, @PathVariable String id) {
     SimpleMailMessage mailMessage = new SimpleMailMessage();
-    UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
+    Integer openId = enc.decryptString(id);
+    UserDetailEntity userDetailEntity = userDetailRepository.findById(openId).get();
 
     mailMessage.setTo(mailDto.getRecipient());
     mailMessage.setSubject("Zwallet - Reset Password");
-    mailMessage.setText("Hello " + userDetailEntity.getUsername()
-        + "," + "\nClick link attached below :" + "\nhttp://localhost:3000/createNewPassword/" + userDetailEntity.getUserId() + "\nThank you");
+    mailMessage.setText("Hello " + userDetailEntity.getUsername() + "," + "\nClick link attached below :"
+        + "\nhttp://localhost:3000/createNewPassword/" + enc.encryptInt(userDetailEntity.getUserId()) + "\nThank you");
 
     javaMailSender.send(mailMessage);
     return ResponseEntity.ok().body("Email sent successfully!");
