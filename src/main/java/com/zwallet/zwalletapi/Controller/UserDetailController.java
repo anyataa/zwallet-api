@@ -449,6 +449,7 @@ public class UserDetailController {
             userData.put("userImage", userDetailEntity.getUserImage());
             userData.put("userEmail", userDetailEntity.getEmail());
             userData.put("userPin", userDetailEntity.getPin());
+            userData.put("userRole", userDetailEntity.getUserRole());
             userData.put("accountId", accountEntity.getAccountId());
             userData.put("accountBalance", accountEntity.getBalance());
 
