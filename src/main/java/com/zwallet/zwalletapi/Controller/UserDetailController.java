@@ -160,6 +160,59 @@ public class UserDetailController {
         }
     }
 
+    // ===== Admin ====
+
+    @PostMapping("/signup/vendor")
+    public ResponseEntity<?> registrasiMerchant(@RequestBody UserDetailDto dto) throws ResourceNotFoundException {
+        StatusMessageDto<UserDataFilter> response = new StatusMessageDto<>();
+        AccountDto newAccount = new AccountDto();
+        // checking user exist or not
+        UserDetailEntity user = userDetailRepository.findByEmail(dto.getEmail());
+        if (user != null) {
+            response.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
+            response.setMessage("Email already exist!");
+            // return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+            return ResponseEntity.ok().body(response);
+        }
+
+        // registering account
+        try {
+            UserDetailEntity userCreated = new UserDetailEntity();
+            userCreated.setUsername(dto.getUsername());
+            userCreated.setEmail(dto.getEmail());
+            userCreated.setPassword(passwordEncoder.encode(dto.getPassword()));
+            userCreated.setUserRole(dto.getUserRole());
+
+            // save to repo
+            // userService.createUser(userCreated);
+            newAccount.setUser(userCreated);
+            accountService.postAccount(newAccount);
+            AccountEntity foundAccount = accountRepository.findByUserId(userCreated);
+
+            PhoneNumberEntity phone = new PhoneNumberEntity();
+            phone.setPhoneNumber(dto.getPhoneNumber());
+            phone.setPrimary(true);
+            phone.setUser(userCreated);
+            phoneRepository.save(phone);
+            // User Filter
+            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(),
+                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null,
+                    enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
+
+            response.setStatus(HttpStatus.CREATED.toString());
+            response.setMessage("User created!");
+            // response.setData(userCreated);
+            response.setData(dataFilter);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            response.setMessage("Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     // ======Sign In======
 
     @PostMapping("/signin")
