@@ -2,8 +2,12 @@ package com.zwallet.zwalletapi.Controller;
 
 import java.net.http.HttpResponse.ResponseInfo;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
+import com.zwallet.zwalletapi.Model.Dto.AccountDataFilter;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionReturnDto;
+import com.zwallet.zwalletapi.Model.Dto.UserDataFilter;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.AccountRepository;
@@ -12,6 +16,7 @@ import com.zwallet.zwalletapi.Service.AccountService;
 import com.zwallet.zwalletapi.Service.TransactionService;
 import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 
+import org.apache.tomcat.util.net.openssl.ciphers.Encryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,32 +44,41 @@ public class TopUpRetrieveController {
     @Autowired
     TransactionService transactionService;
 
+    @Autowired
+    private Encryptor enc;
+
     @PostMapping(value = "/topup")
     public ResponseEntity<?> topUpBalance(@RequestBody TransactionDto dto) throws ResourceNotFoundException {
         AccountEntity zwallet = accountService.getAccountByUserName("Zwallet");
-        AccountEntity receiver = accountService.getAccountById(dto.getToAccountId());
+        AccountEntity receiver = accountService.getAccountById(dto.getOpenToAccountId());
         return transactionService.vendorTransfer(1, 4, dto, receiver, zwallet);
     }
 
     @PostMapping(value = "/retrieve")
     public ResponseEntity<?> retrieveBalance(@RequestBody TransactionDto dto) throws ResourceNotFoundException {
         AccountEntity zwallet = accountService.getAccountByUserName("Zwallet");
-        AccountEntity sender = accountService.getAccountById(dto.getToAccountId());
+        Integer openId = enc.decryptString(dto.getToAccountId());
+        AccountEntity sender = accountService.getAccountById(openId);
         return transactionService.vendorTransfer(0, 5, dto, zwallet, sender);
     }
 
     @PostMapping(value = "/retrieve/bank")
     public ResponseEntity<?> retrieveBalanceByBank(@RequestBody TransactionDto dto) throws ResourceNotFoundException {
-        StatusMessageDto<AccountEntity> response = new StatusMessageDto<>();
+        StatusMessageDto response = new StatusMessageDto<>();
         UserDetailEntity bankUser = userRepo.findBankByName(dto.getUsername());
         AccountEntity bank = accountRepo.findByUserId(bankUser);
-        AccountEntity sender = accountService.getAccountById(dto.getToAccountId());
+        Integer openId = enc.decryptString(dto.getToAccountId());
+        AccountEntity sender = accountService.getAccountById(openId);
+
+        // filter.setsenBalance(dto.getTransactionAmount());
+        // filter.setSender(sender.getUserId().getUsername());
+        // filter.setReceiver(bank.getUserId().getUsername());
         try {
-            transactionService.vendorTransfer(0, 5, dto, bank, sender);
-            response.setData(sender);
-            response.setMessage("Success");
-            response.setStatus(HttpStatus.ACCEPTED.toString());
-            return ResponseEntity.ok().body(response);
+
+            // response.setData(filter);
+            // response.setMessage("Success");
+            // response.setStatus(HttpStatus.ACCEPTED.toString());
+            return transactionService.vendorTransfer(0, 5, dto, bank, sender);
         } catch (Exception e) {
             response.setData(null);
             response.setMessage("Error");

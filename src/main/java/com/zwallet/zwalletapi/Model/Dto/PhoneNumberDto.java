@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class PhoneNumberDto {
   private String phoneNumber;
   private boolean isPrimary;
-  private Integer userId;
+  private String userId;
   private String phoneNumberId;
 }

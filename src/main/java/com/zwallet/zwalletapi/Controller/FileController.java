@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Model.Dto.FileDto;
 import com.zwallet.zwalletapi.Model.Entity.FileEntity;
 import com.zwallet.zwalletapi.Repository.FileRepository;
@@ -40,9 +41,13 @@ public class FileController {
   @Autowired
   private FileRepository fileRepository;
 
+  @Autowired
+  private Encryptor enc;
+
   @PostMapping("/upload/{id}")
-  public FileDto uploadFile(@RequestParam("file") MultipartFile file, @PathVariable Integer id) {
-    String filename = fileServiceImpl.storeFile(file, id);
+  public FileDto uploadFile(@RequestParam("file") MultipartFile file, @PathVariable String id) {
+    Integer openId = enc.decryptString(id);
+    String filename = fileServiceImpl.storeFile(file, openId);
 
     String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/download/")
         .path(filename).toUriString();

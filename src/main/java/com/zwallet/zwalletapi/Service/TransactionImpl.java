@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
 import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionBalanceHistoryDto;
@@ -17,6 +18,7 @@ import com.zwallet.zwalletapi.Model.Dto.TransactionGraphDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionItemDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodFilterDto;
+import com.zwallet.zwalletapi.Model.Dto.TransactionReturnDto;
 import com.zwallet.zwalletapi.Model.Dto.VendorDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
@@ -40,6 +42,9 @@ public class TransactionImpl implements TransactionService {
 
     @Autowired
     private AccountRepository accountRepo;
+
+    @Autowired
+    private Encryptor enc;
 
     @Autowired
     private UserDetailRepository userRepo;
@@ -134,6 +139,7 @@ public class TransactionImpl implements TransactionService {
     public ResponseEntity<?> transactionTransfer(TransactionDto dto) throws ResourceNotFoundException {
         StatusMessageDto<TransactionEntity> response = new StatusMessageDto<>();
         Date date = new Date();
+        Integer accountId = enc.decryptString(dto.getFromAccountId());
         Timestamp ts = new Timestamp(date.getTime());
         AccountEntity receiver = accountRepo.getAccountUserByUserId(dto.getToUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID" + dto.getToUserId()));
@@ -141,7 +147,7 @@ public class TransactionImpl implements TransactionService {
         // .orElseThrow(() -> new ResourceNotFoundException("Receiver with this id is
         // not exist"));
         // --------- Will Change set as the active user who sends the money -----------
-        AccountEntity sender = accountRepo.findById(dto.getFromAccountId())
+        AccountEntity sender = accountRepo.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Sender with this id is not exist"));
         UserDetailEntity senderData = userRepo.findById(sender.getUserId().getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sender with this id is not exist"));
@@ -215,8 +221,11 @@ public class TransactionImpl implements TransactionService {
     @Override
     public ResponseEntity<?> vendorTransfer(Integer transactionType, Integer transactionDetail, TransactionDto dto,
             AccountEntity receiver, AccountEntity sender) throws ResourceNotFoundException {
+        StatusMessageDto response = new StatusMessageDto<>();
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
+        TransactionReturnDto filter = new TransactionReturnDto();
+
         // ------------------ Will Change end ---------------
         TransactionEntity newTransaction = new TransactionEntity();
         newTransaction.setTransactionAmount(dto.getTransactionAmount());
@@ -241,8 +250,17 @@ public class TransactionImpl implements TransactionService {
             repo.save(newTransaction);
             accountRepo.save(sender);
             accountRepo.save(receiver);
-            return ResponseEntity.ok().body(newTransaction);
+            filter.setReceiver(receiver.getUserId().getUsername());
+            filter.setSender(sender.getUserId().getUsername());
+            filter.setAmount(newTransaction.getTransactionAmount());
+            filter.setSenderBalance(newTransaction.getFromAccountBalance());
+            response.setData(filter);
+            response.setMessage("Success");
+            response.setStatus(HttpStatus.OK.toString());
+            return ResponseEntity.ok().body(response);
         } catch (Exception e) {
+            response.setMessage("Something Went Wrong");
+            response.setStatus(HttpStatus.BAD_REQUEST.toString());
             newTransaction.setIsSuccess(1);
             return ResponseEntity.ok().body(e.getMessage());
         }

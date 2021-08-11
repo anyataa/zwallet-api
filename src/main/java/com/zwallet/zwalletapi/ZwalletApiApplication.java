@@ -1,7 +1,6 @@
 package com.zwallet.zwalletapi;
 
-import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
-import com.zwallet.zwalletapi.Property.FileStorageProperties;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;import com.zwallet.zwalletapi.Property.FileStorageProperties;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,12 +1,14 @@
 package com.zwallet.zwalletapi.Controller;
 
 import java.math.BigInteger;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Config.JWTUtils;
 import com.zwallet.zwalletapi.Model.Dto.AccountDto;
 import com.zwallet.zwalletapi.Model.Dto.ChangePasswordDto;
@@ -72,10 +74,7 @@ public class UserDetailController {
     private JWTUtils jwtUtils;
 
     @Autowired
-    private BasicTextEncryptor textEncryptor;
-
-    @Autowired
-    private BasicIntegerNumberEncryptor numEncryptor;
+    private Encryptor enc;
 
     @Autowired
     private PhoneNumberRepository phoneRepository;
@@ -143,9 +142,62 @@ public class UserDetailController {
             phone.setUser(userCreated);
             phoneRepository.save(phone);
             // User Filter
-            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(), userCreated.getUserId(),
-                    dto.getUsername(), null, dto.getEmail(), null, foundAccount.getAccountId(),
-                    newAccount.getBalance());
+            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(),
+                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null, dto.getUserRole(),
+                    enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
+
+            response.setStatus(HttpStatus.CREATED.toString());
+            response.setMessage("User created!");
+            // response.setData(userCreated);
+            response.setData(dataFilter);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            response.setMessage("Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // ===== Admin ====
+
+    @PostMapping("/signup/vendor")
+    public ResponseEntity<?> registrasiMerchant(@RequestBody UserDetailDto dto) throws ResourceNotFoundException {
+        StatusMessageDto<UserDataFilter> response = new StatusMessageDto<>();
+        AccountDto newAccount = new AccountDto();
+        // checking user exist or not
+        UserDetailEntity user = userDetailRepository.findByEmail(dto.getEmail());
+        if (user != null) {
+            response.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
+            response.setMessage("Email already exist!");
+            // return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+            return ResponseEntity.ok().body(response);
+        }
+
+        // registering account
+        try {
+            UserDetailEntity userCreated = new UserDetailEntity();
+            userCreated.setUsername(dto.getUsername());
+            userCreated.setEmail(dto.getEmail());
+            userCreated.setPassword(passwordEncoder.encode(dto.getPassword()));
+            userCreated.setUserRole(dto.getUserRole());
+
+            // save to repo
+            // userService.createUser(userCreated);
+            newAccount.setUser(userCreated);
+            accountService.postAccount(newAccount);
+            AccountEntity foundAccount = accountRepository.findByUserId(userCreated);
+
+            PhoneNumberEntity phone = new PhoneNumberEntity();
+            phone.setPhoneNumber(dto.getPhoneNumber());
+            phone.setPrimary(true);
+            phone.setUser(userCreated);
+            phoneRepository.save(phone);
+            // User Filter
+            UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(),
+                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null, dto.getUserRole(),
+                    enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
 
             response.setStatus(HttpStatus.CREATED.toString());
             response.setMessage("User created!");
@@ -184,19 +236,18 @@ public class UserDetailController {
             UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(userDetailsImpl.getUsername());
             PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
             AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
-            // userData.put("user", userDetailEntity);
-            // UserDataFilter dataFilter = new UserDataFilter(userDetailEntity.getUserId(),
-            // userDetailEntity.getUsername(),
-            // userDetailEntity.getUserImage(), phoneNumberEntity.getPhoneNumber());
+
             userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-            // userData.put("userId",
-            // numEncryptor.encrypt(BigInteger.valueOf(userDetailEntity.getUserId())));
-            userData.put("userId", userDetailEntity.getUserId());
+
+            userData.put("userId", enc.encryptInt(userDetailEntity.getUserId()));
+
             userData.put("userName", userDetailEntity.getUsername());
             userData.put("userImage", userDetailEntity.getUserImage());
             userData.put("userEmail", userDetailEntity.getEmail());
             userData.put("userPin", userDetailEntity.getPin());
-            userData.put("accountId", accountEntity.getAccountId());
+            userData.put("userRole", userDetailEntity.getUserRole());
+            // userData.put("accountId", accountEntity.getAccountId());
+            userData.put("accountId", enc.encryptInt(accountEntity.getAccountId()));
             userData.put("accountBalance", accountEntity.getBalance());
             // userData.put("account", accountEntity);
 
@@ -249,8 +300,11 @@ public class UserDetailController {
     // ======Change Password - Profile======
 
     @PutMapping("/change-password/{id}")
-    public ResponseEntity<?> updatePassword(@RequestBody ChangePasswordDto dto, @PathVariable Integer id) {
-        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+    public ResponseEntity<?> updatePassword(@RequestBody ChangePasswordDto dto, @PathVariable String id)
+            throws ResourceNotFoundException {
+        Integer openId = enc.decryptString(id);
+        UserDetailEntity userEntity = userDetailRepository.findById(openId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sorry Account with this ID cannot be found : " + id));
 
         // userEntity.setPassword(passwordEncoder.encode(dto.getCurrentPass()));
         // userEntity.setPassword(passwordEncoder.encode(dto.getNewPass()));
@@ -270,6 +324,7 @@ public class UserDetailController {
                 userData.put("userImage", userEntity.getUserImage());
                 userData.put("userEmail", userEntity.getEmail());
                 userData.put("userPin", userEntity.getPin());
+                userData.put("userRole", userEntity.getUserRole());
                 userData.put("accountId", accountEntity.getAccountId());
                 userData.put("accountBalance", accountEntity.getBalance());
 
@@ -287,22 +342,24 @@ public class UserDetailController {
     // ======Create & New PIN======
 
     @PutMapping("/update-pin/{id}")
-    public ResponseEntity<?> updatePin(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
+    public ResponseEntity<?> updatePin(@RequestBody UserDetailDto dto, @PathVariable String id) {
+        Integer openId = enc.decryptString(id);
+        UserDetailEntity userEntity = userDetailRepository.findById(openId).get();
         userEntity.setPin(dto.getPin());
         userDetailRepository.save(userEntity);
 
         Map<String, Object> userData = new HashMap<>();
-        UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
+        UserDetailEntity userDetailEntity = userDetailRepository.findById(openId).get();
         PhoneNumberEntity phoneNumberEntity = phoneRepository.findByUserAndIsPrimary(userDetailEntity, true);
         AccountEntity accountEntity = accountRepository.findByUserId(userDetailEntity);
         userData.put("phoneNumber", phoneNumberEntity.getPhoneNumber());
-        userData.put("userId", userDetailEntity.getUserId());
+        userData.put("userId", enc.encryptInt(userDetailEntity.getUserId()));
         userData.put("userName", userDetailEntity.getUsername());
         userData.put("userImage", userDetailEntity.getUserImage());
         userData.put("userEmail", userDetailEntity.getEmail());
         userData.put("userPin", userDetailEntity.getPin());
-        userData.put("accountId", accountEntity.getAccountId());
+        userData.put("userRole", userEntity.getUserRole());
+        userData.put("accountId", enc.encryptInt(accountEntity.getAccountId()));
         userData.put("accountBalance", accountEntity.getBalance());
 
         return ResponseEntity.ok().body(userData);
@@ -311,18 +368,32 @@ public class UserDetailController {
     // ======Reset Password : Login page======
 
     @PutMapping("/reset-password/{id}")
-    public ResponseEntity<?> resetPassword(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-        UserDetailEntity userEntity = userDetailRepository.findById(id).get();
-        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-        userDetailRepository.save(userEntity);
+    public ResponseEntity<?> resetPassword(@RequestBody UserDetailDto dto, @PathVariable String id)
+            throws ResourceNotFoundException {
+        Integer openId = enc.decryptString(id);
+        StatusMessageDto res = new StatusMessageDto<>();
+        UserDetailEntity userEntity = userDetailRepository.findById(openId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sorry account with this id cannot be found :" + id));
 
-        Map<String, Object> userData = new HashMap<>();
-        UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
-        userData.put("userId", userDetailEntity.getUserId());
-        userData.put("userEmail", userDetailEntity.getEmail());
+        try {
+            userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+            userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+            userDetailRepository.save(userEntity);
+            res.setMessage("Change Password Success");
+            res.setStatus(HttpStatus.OK.toString());
+            Map<String, Object> userData = new HashMap<>();
+            // UserDetailEntity userDetailEntity = userDetailRepository.findById(id).get();
+            userData.put("userId", id);
+            userData.put("userEmail", userEntity.getEmail());
+            res.setData(userData);
+            return ResponseEntity.ok().body(res);
+        } catch (Exception e) {
+            res.setMessage("Sorry, something went wrong");
+            res.setData(e);
+            res.setStatus(HttpStatus.BAD_GATEWAY.toString());
+            return ResponseEntity.ok().body(res);
+        }
 
-        return ResponseEntity.ok().body("Password Changed");
     }
 
     // ======Personal Information======
@@ -393,7 +464,7 @@ public class UserDetailController {
         // try {
         UserDetailEntity userDetailEntity = userDetailRepository.findByEmail(dto.getEmail());
         Map<String, Object> userData = new HashMap<>();
-        userData.put("userId", userDetailEntity.getUserId());
+        userData.put("userId", enc.encryptInt(userDetailEntity.getUserId()));
         userData.put("userEmail", userDetailEntity.getEmail());
         return ResponseEntity.ok().body(userData);
         // } catch (Exception e) {
@@ -439,9 +510,9 @@ public class UserDetailController {
 
     // =====Edit User - Personnal Info=====
 
-    @PutMapping("/updateuser/{id}")
-    public ResponseEntity<?> updatePersonalInformation(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
-        // Integer idInt = numEncryptor.decrypt(id).intValue();
+    @PutMapping("/updateuser/{encId}")
+    public ResponseEntity<?> updatePersonalInformation(@RequestBody UserDetailDto dto, @PathVariable String encId) {
+        Integer id = enc.decryptString(encId);
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setUsername(dto.getUsername());
         userDetailRepository.save(userEntity);
@@ -464,8 +535,9 @@ public class UserDetailController {
         return ResponseEntity.ok().body("Your Last Name Has Been Changed Successfully!");
     }
 
-    @PutMapping("/update-email/{id}")
-    public ResponseEntity<?> updateEmail(@RequestBody UserDetailDto dto, @PathVariable Integer id) {
+    @PutMapping("/update-email/{encId}")
+    public ResponseEntity<?> updateEmail(@RequestBody UserDetailDto dto, @PathVariable String encId) {
+        Integer id = enc.decryptString(encId);
         UserDetailEntity userEntity = userDetailRepository.findById(id).get();
         userEntity.setEmail(dto.getEmail());
         userDetailRepository.save(userEntity);

@@ -26,9 +26,12 @@ public class SubscriptionController {
 
     @PostMapping
     public ResponseEntity<?> postSubscription(@RequestBody TransactionDto dto) throws ResourceNotFoundException {
-        AccountEntity subscribeTo = accountService.getAccountByUserName(dto.getUsername());
-        AccountEntity userAccount = accountService.getAccountById(dto.getFromAccountId());
-        transactionService.vendorTransfer(0, 2, dto, subscribeTo, userAccount);
+        // AccountEntity subscribeTo =
+        // accountService.getAccountByUserName(dto.getUsername());
+
+        // AccountEntity userAccount =
+        // accountService.getAccountById(dto.getFromAccountId());
+        // transactionService.vendorTransfer(0, 2, dto, subscribeTo, userAccount);
         return ResponseEntity.ok().body("transaction success");
     }
 

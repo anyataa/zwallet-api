@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Model.Dto.PhoneNumberDto;
 import com.zwallet.zwalletapi.Model.Entity.PhoneNumberEntity;
 import com.zwallet.zwalletapi.Model.Entity.UserDetailEntity;
 import com.zwallet.zwalletapi.Repository.PhoneNumberRepository;
 import com.zwallet.zwalletapi.Repository.UserDetailRepository;
+import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,8 +34,12 @@ public class PhoneNumberController {
   @Autowired
   private UserDetailRepository userDetailRepository;
 
-  @GetMapping("/{id}")
-  public ResponseEntity<?> getPhones(@PathVariable Integer id) {
+  @Autowired
+  private Encryptor enc;
+
+  @GetMapping("/{encId}")
+  public ResponseEntity<?> getPhones(@PathVariable String encId) {
+    Integer id = enc.decryptString(encId);
     UserDetailEntity userDetail = userDetailRepository.findById(id).get();
     List<PhoneNumberEntity> phones = phoneRepository.findByUser(userDetail);
 
@@ -70,10 +76,12 @@ public class PhoneNumberController {
   }
 
   @PostMapping("/add")
-  public ResponseEntity<?> addPhone(@RequestBody PhoneNumberDto dto) {
+  public ResponseEntity<?> addPhone(@RequestBody PhoneNumberDto dto) throws ResourceNotFoundException {
+    Integer openId = enc.decryptString(dto.getUserId());
     PhoneNumberEntity phone = new PhoneNumberEntity(dto.getPhoneNumber());
 
-    UserDetailEntity user = userDetailRepository.findById(dto.getUserId()).get();
+    UserDetailEntity user = userDetailRepository.findById(openId)
+        .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID :" + dto.getUserId()));
 
     phone.setUser(user);
 
@@ -82,9 +90,11 @@ public class PhoneNumberController {
   }
 
   @PutMapping("/set-primary")
-  public ResponseEntity<?> updatePhone(@RequestBody PhoneNumberDto dto) {
+  public ResponseEntity<?> updatePhone(@RequestBody PhoneNumberDto dto) throws ResourceNotFoundException {
     try {
-      UserDetailEntity userDetail = userDetailRepository.findById(dto.getUserId()).get();
+      Integer openId = enc.decryptString(dto.getUserId());
+      UserDetailEntity userDetail = userDetailRepository.findById(openId)
+          .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with this ID :" + dto.getUserId()));
       List<PhoneNumberEntity> phones = phoneRepository.findByUser(userDetail);
 
       for (PhoneNumberEntity e : phones) {

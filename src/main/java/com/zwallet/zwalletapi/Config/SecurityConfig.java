@@ -68,6 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // ENCRYPTOR TEXT
     @Bean
     public BasicTextEncryptor encryptorText() {
+
         BasicTextEncryptor ency = new BasicTextEncryptor();
         ency.setPassword("password");
         return ency;
