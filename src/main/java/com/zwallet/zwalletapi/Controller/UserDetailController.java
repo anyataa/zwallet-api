@@ -143,7 +143,7 @@ public class UserDetailController {
             phoneRepository.save(phone);
             // User Filter
             UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(),
-                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null,
+                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null, dto.getUserRole(),
                     enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
 
             response.setStatus(HttpStatus.CREATED.toString());
@@ -196,7 +196,7 @@ public class UserDetailController {
             phoneRepository.save(phone);
             // User Filter
             UserDataFilter dataFilter = new UserDataFilter(dto.getPhoneNumber(),
-                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null,
+                    enc.encryptInt(userCreated.getUserId()), dto.getUsername(), null, dto.getEmail(), null, dto.getUserRole(),
                     enc.encryptInt(foundAccount.getAccountId()), newAccount.getBalance());
 
             response.setStatus(HttpStatus.CREATED.toString());
@@ -245,6 +245,7 @@ public class UserDetailController {
             userData.put("userImage", userDetailEntity.getUserImage());
             userData.put("userEmail", userDetailEntity.getEmail());
             userData.put("userPin", userDetailEntity.getPin());
+            userData.put("userRole", userDetailEntity.getUserRole());
             // userData.put("accountId", accountEntity.getAccountId());
             userData.put("accountId", enc.encryptInt(accountEntity.getAccountId()));
             userData.put("accountBalance", accountEntity.getBalance());
@@ -323,6 +324,7 @@ public class UserDetailController {
                 userData.put("userImage", userEntity.getUserImage());
                 userData.put("userEmail", userEntity.getEmail());
                 userData.put("userPin", userEntity.getPin());
+                userData.put("userRole", userEntity.getUserRole());
                 userData.put("accountId", accountEntity.getAccountId());
                 userData.put("accountBalance", accountEntity.getBalance());
 
@@ -356,6 +358,7 @@ public class UserDetailController {
         userData.put("userImage", userDetailEntity.getUserImage());
         userData.put("userEmail", userDetailEntity.getEmail());
         userData.put("userPin", userDetailEntity.getPin());
+        userData.put("userRole", userEntity.getUserRole());
         userData.put("accountId", enc.encryptInt(accountEntity.getAccountId()));
         userData.put("accountBalance", accountEntity.getBalance());
 
