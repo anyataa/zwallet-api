@@ -8,14 +8,17 @@ import java.util.List;
 
 import com.zwallet.zwalletapi.Config.Encryptor;
 import com.zwallet.zwalletapi.Model.Dto.IncomeOutcomeDto;
+import com.zwallet.zwalletapi.Model.Dto.StatusMessageDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionItemDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodDto;
 import com.zwallet.zwalletapi.Model.Dto.TransactionPeriodFilterDto;
 import com.zwallet.zwalletapi.Model.Entity.AccountEntity;
 import com.zwallet.zwalletapi.Model.Entity.TransactionEntity;
+import com.zwallet.zwalletapi.Repository.AccountRepository;
 import com.zwallet.zwalletapi.Repository.TransactionRepository;
 import com.zwallet.zwalletapi.Service.TransactionImpl;
+import com.zwallet.zwalletapi.Service.TransactionService;
 import com.zwallet.zwalletapi.Utils.Exception.ResourceNotFoundException;
 
 import org.jasypt.util.numeric.BasicIntegerNumberEncryptor;
@@ -41,6 +44,12 @@ public class TransactionController {
     private TransactionRepository repo;
     @Autowired
     private TransactionImpl service;
+
+    @Autowired
+    TransactionService transactionService;
+
+    @Autowired
+    AccountRepository accountRepo;
 
     @Autowired
     private Encryptor enc;
@@ -89,6 +98,32 @@ public class TransactionController {
             throws ResourceNotFoundException {
         Integer accountId = enc.decryptString(encAccountId);
         return service.findTransactionPerDay(accountId);
+    }
+    // 1 "Transfer",
+    // 2 "Subscription",
+    // 3 "Payment",
+    // 4 "Top Up",
+    // 5 "Retrieve",
+
+    // Transaction Payments
+    @PostMapping("/payments/{username}")
+    public ResponseEntity<?> postPayment(@PathVariable("username") String userName, @RequestBody TransactionDto dto)
+            throws ResourceNotFoundException {
+        StatusMessageDto res = new StatusMessageDto<>();
+        AccountEntity merchant = accountRepo.findByUsername(userName).get();
+        Integer openId = enc.decryptString(dto.getToAccountId());
+        AccountEntity sender = accountRepo.findById(openId).get();
+
+        try {
+            return transactionService.vendorTransfer(0, 3, dto, merchant, sender);
+            // return ResponseEntity.ok().body(sender);
+        } catch (Exception e) {
+            res.setMessage("Error");
+            res.setData(e);
+            return ResponseEntity.ok().body(e);
+
+        }
+
     }
 
     // Try Encrypt

@@ -99,9 +99,10 @@ public class AccountController {
 
     }
 
-    @GetMapping("/bca")
-    public AccountEntity getAccountByUserName() throws ResourceNotFoundException {
-        AccountEntity foundAccount = accountRepo.findByUsername("BCA")
+    @GetMapping("username/{username}")
+    public AccountEntity getAccountByUserName(@PathVariable(value = "username") String userName)
+            throws ResourceNotFoundException {
+        AccountEntity foundAccount = accountRepo.findByUsername(userName)
                 .orElseThrow(() -> new ResourceNotFoundException("Account with username BCA cannot be found"));
         return foundAccount;
     }
