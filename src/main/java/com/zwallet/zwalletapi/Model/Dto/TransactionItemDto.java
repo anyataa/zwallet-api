@@ -11,17 +11,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TransactionItemDto {
     private String sender;
+    private String senderImage;
     private String receiver;
+    private String receiverImage;
     private Double amount;
     private Timestamp date;
     private Integer transactionType;
     private Integer transactionDetails;
     private String transactionNotes;
 
-    public TransactionItemDto(String sender, String receiver, Double amount, Timestamp date, Integer transactionType,
-            Integer transactionDetails, String transactionNotes) {
+    public TransactionItemDto(String sender, String senderImage, String receiver, String receiverImage, Double amount,
+            Timestamp date, Integer transactionType, Integer transactionDetails, String transactionNotes) {
         this.sender = sender;
+        this.senderImage = senderImage;
         this.receiver = receiver;
+        this.receiverImage = receiverImage;
         this.amount = amount;
         this.date = date;
         this.transactionType = transactionType;

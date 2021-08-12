@@ -59,7 +59,8 @@ public class TransactionImpl implements TransactionService {
         List<TransactionItemDto> foundFilterIncome = new ArrayList<>();
         for (TransactionEntity item : foundIncome) {
             TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
-                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getFromAccountId().getUserId().getUserImage(), item.getToAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUserImage(), item.getTransactionAmount(),
                     item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
                     item.getTransactionNotes());
             foundFilterIncome.add(filter);
@@ -75,7 +76,8 @@ public class TransactionImpl implements TransactionService {
         List<TransactionItemDto> foundFilterOutcome = new ArrayList<>();
         for (TransactionEntity item : foundOutcome) {
             TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
-                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getFromAccountId().getUserId().getUserImage(), item.getToAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUserImage(), item.getTransactionAmount(),
                     item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
                     item.getTransactionNotes());
             foundFilterOutcome.add(filter);
@@ -91,7 +93,8 @@ public class TransactionImpl implements TransactionService {
         List<TransactionItemDto> foundFilterAll = new ArrayList<>();
         for (TransactionEntity item : foundTransaction) {
             TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
-                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getFromAccountId().getUserId().getUserImage(), item.getToAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUserImage(), item.getTransactionAmount(),
                     item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
                     item.getTransactionNotes());
             foundFilterAll.add(filter);
@@ -105,7 +108,8 @@ public class TransactionImpl implements TransactionService {
         List<TransactionItemDto> foundToday2 = new ArrayList<>();
         for (TransactionEntity item : today2) {
             TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
-                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getFromAccountId().getUserId().getUserImage(), item.getToAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUserImage(), item.getTransactionAmount(),
                     item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
                     item.getTransactionNotes());
             foundToday2.add(filter);
@@ -114,7 +118,8 @@ public class TransactionImpl implements TransactionService {
         List<TransactionItemDto> foundWeek2 = new ArrayList<>();
         for (TransactionEntity item : week2) {
             TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
-                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getFromAccountId().getUserId().getUserImage(), item.getToAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUserImage(), item.getTransactionAmount(),
                     item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
                     item.getTransactionNotes());
             foundWeek2.add(filter);
@@ -124,7 +129,8 @@ public class TransactionImpl implements TransactionService {
         List<TransactionItemDto> foundMonth2 = new ArrayList<>();
         for (TransactionEntity item : month2) {
             TransactionItemDto filter = new TransactionItemDto(item.getFromAccountId().getUserId().getUsername(),
-                    item.getToAccountId().getUserId().getUsername(), item.getTransactionAmount(),
+                    item.getFromAccountId().getUserId().getUserImage(), item.getToAccountId().getUserId().getUsername(),
+                    item.getToAccountId().getUserId().getUserImage(), item.getTransactionAmount(),
                     item.getTransactionTimestamp(), item.getTransactionType(), item.getTransactionDetail(),
                     item.getTransactionNotes());
             foundMonth2.add(filter);
